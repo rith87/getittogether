@@ -1,7 +1,10 @@
 import os
-import getItTogether
+from getItTogether import *
 import unittest
 import tempfile
+
+from config import basedir
+from models import User, Post
 
 GOOD_USERNAME='nufootball'
 GOOD_PASSWORD='sucks'
@@ -11,15 +14,18 @@ class getItTogetherTestCase(unittest.TestCase):
 
     def setUp(self):
         """Before each test, set up a blank database"""
-        self.db_fd, getItTogether.app.config['DATABASE'] = tempfile.mkstemp()
-        getItTogether.app.config['TESTING'] = True
-        self.app = getItTogether.app.test_client()
-        getItTogether.init_db()
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'test.db')
+        self.app = app.test_client()
+        db.create_all()
+        u = User(username = GOOD_USERNAME, password = GOOD_PASSWORD, \
+            email = 'nufootballsucks@northwestern.edu', role = 0)
+        db.session.add(u)
+        db.session.commit()
 
     def tearDown(self):
         """Get rid of the database again after each test."""
-        os.close(self.db_fd)
-        os.unlink(getItTogether.app.config['DATABASE'])
+        db.session.remove()
+        db.drop_all()
 
     def login(self, username, password):
         return self.app.post('/login', data=dict(

@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
   {% if session.logged_in %}
-    <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
+    <form action="{{ url_for('add_feedback') }}" method=post class=add-feedback>
       <dl>
         <dt>Title:
         <dd><input type=text size=30 name=title>
@@ -11,11 +11,11 @@
       </dl>
     </form>
   {% endif %}
-  <ul class=entries>
-  {% for entry in entries %}
-    <li><h2>{{ entry.title }}</h2>{{ entry.text|safe }}
+  <ul class=feedback>
+  {% for item in feedback %}
+    <li><h2>{{ item.title }}</h2>{{ item.text|safe }}
   {% else %}
-    <li><em>Unbelievable.  No entries here so far</em>
+    <li><em>Unbelievable.  No feedback here so far</em>
   {% endfor %}
   </ul>
 {% endblock %}

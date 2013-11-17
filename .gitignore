@@ -10,4 +10,5 @@ dist
 *.egg-info
 _mailinglist
 .tox
-.commitmessage
+*.commitmessage
+db_repository/

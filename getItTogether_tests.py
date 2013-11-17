@@ -2,6 +2,7 @@ import os
 from getItTogether import *
 import unittest
 import tempfile
+import views
 
 from config import basedir
 from models import User, Post
@@ -39,6 +40,7 @@ class getItTogetherTestCase(unittest.TestCase):
     def test_successful_login_logout(self):
         """Make sure login and logout succeeds"""
         rv = self.login(GOOD_USERNAME, GOOD_PASSWORD)
+        # print rv.data
         assert b'You were logged in' in rv.data
         rv = self.logout()
         assert b'You were logged out' in rv.data

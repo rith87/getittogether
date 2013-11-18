@@ -2,7 +2,6 @@ import os
 from getItTogether import *
 import unittest
 import tempfile
-import views
 
 from config import basedir
 from models import User, Post

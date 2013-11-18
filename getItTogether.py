@@ -17,5 +17,5 @@ app.config.from_object('config')
 
 db = SQLAlchemy(app)
 
-# import models
-# import views
+import models
+import views

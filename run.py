@@ -1,6 +1,4 @@
-from getItTogether import app, db
-import models
-import views
+from getItTogether import app, db, models
 
 # TODO: move user creation
 GOOD_USERNAME='nufootball'

@@ -15,3 +15,8 @@ Production:
     
 4. Start app server    
     python run.py
+    
+Testing:
+
+1. Run all tests:
+    python getItTogether_tests.py

@@ -56,6 +56,7 @@ class getItTogetherTestCase(unittest.TestCase):
             title='<Hello>',
             text='<strong>HTML</strong> allowed here'
         ), follow_redirects=True)
+        # print rv.data
         assert b'No entries here so far' not in rv.data
         assert b'&lt;Hello&gt;' in rv.data
         assert b'<strong>HTML</strong> allowed here' in rv.data
@@ -67,6 +68,15 @@ class getItTogetherTestCase(unittest.TestCase):
             text='YOU SHOULD NOT SEE THIS'
         ), follow_redirects=True)
         assert b'401 Unauthorized' in rv.data
+        
+    def test_post_author(self):
+        """Test that messages have the correct author"""
+        self.login(GOOD_USERNAME, GOOD_PASSWORD)
+        rv = self.app.post('/add', data=dict(
+            title='<Hello>',
+            text='<strong>HTML</strong> allowed here'
+        ), follow_redirects=True)
+        assert GOOD_USERNAME in rv.data
         
 if __name__ == '__main__':
     unittest.main()

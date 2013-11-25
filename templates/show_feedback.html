@@ -13,7 +13,7 @@
   {% endif %}
   <ul class=feedback>
   {% for item in feedback %}
-    <li><h2>{{ item.title }}</h2>{{ item.text|safe }}
+    <li><h2>{{ item[0].title }} by {{ item[1].username }}</h2>{{ item[0].text|safe }}
   {% else %}
     <li><em>Unbelievable.  No feedback here so far</em>
   {% endfor %}

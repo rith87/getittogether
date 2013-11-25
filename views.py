@@ -1,21 +1,35 @@
 from flask import render_template, flash, redirect, request, session, \
     g, url_for, abort
-from getItTogether import app, db
+from flask.ext.login import login_user, logout_user, current_user, login_required
+from getItTogether import app, db, lm
 from models import User, Post
 
-def verify_user(username, password):
-    """Checks if user is registered"""
-    res = User.query.filter(User.username == username, User.password == password).first()
-    # print res
-    return res
+'''
+Bugs/pending issues:
+1. AnonymousUserMixin user is not anonymous in the add_feedback() function
+2. Remember_me functionality not implemented
+'''
 
+def find_user(username, password):
+    """Checks if user is registered"""
+    user = User.query.filter(User.username == username, User.password == password).first()
+    # print res
+    return user
+
+# Flask-login related decorated functions    
+@lm.user_loader
+def load_user(id):
+    return User.query.get(int(id))    
+    
+# App related decorated functions    
 @app.route('/add', methods=['POST'])
 def add_feedback():
-    if not session.get('logged_in'):
+    user = g.user
+    # print user
+    if not user or not session.get('logged_in'):
         abort(401)
-    # This is a hack until we integrate flask-login
     p = Post (title=request.form['title'], text=request.form['text'], \
-        points=0, userId=0)
+        points=0, userId=user.id)
     db.session.add(p)
     db.session.commit()
     flash('New feedback was successfully posted')
@@ -24,23 +38,37 @@ def add_feedback():
 @app.route('/')
 def show_feedback():
     feedback = Post.query.all()
-    return render_template('show_feedback.html', feedback=feedback)
+    # users = []
+    refinedFeedback = []
+    for item in feedback:
+        # users.append(User.query.get(item.userId))
+        refinedFeedback.append((item, User.query.get(item.userId)))
+    # return render_template('show_feedback.html', feedback=feedback, users=users)
+    return render_template('show_feedback.html', feedback=refinedFeedback)    
     
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
+    if g.user is not None and g.user.is_authenticated():
+        return redirect(url_for('show_feedback'))    
     if request.method == 'POST':
-        if not verify_user(request.form['username'], request.form['password']):
+        user = find_user(request.form['username'], request.form['password'])
+        if not user:
             error = 'Invalid username or password'
         else:
+            login_user(user)
             session['logged_in'] = True
             flash('You were logged in')
             return redirect(url_for('show_feedback'))
     return render_template('login.html', error=error)
 
-
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
+    logout_user()
     flash('You were logged out')
     return redirect(url_for('show_feedback')) 
+    
+@app.before_request
+def before_request():
+    g.user = current_user

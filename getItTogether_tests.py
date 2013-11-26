@@ -67,7 +67,9 @@ class getItTogetherTestCase(unittest.TestCase):
             title='<Hello>',
             text='YOU SHOULD NOT SEE THIS'
         ), follow_redirects=True)
-        assert b'401 Unauthorized' in rv.data
+        # assert b'401 Unauthorized' in rv.data
+        assert b'Login' in rv.data
+        assert b'Username:' in rv.data
         
     def test_post_author(self):
         """Test that messages have the correct author"""

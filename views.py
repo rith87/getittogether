@@ -6,8 +6,7 @@ from models import User, Post
 
 '''
 Bugs/pending issues:
-1. AnonymousUserMixin user is not anonymous in the add_feedback() function
-2. Remember_me functionality not implemented
+login_user(user, remember = true): User remains logged in after restarting browser
 '''
 
 def find_user(username, password):
@@ -23,10 +22,11 @@ def load_user(id):
     
 # App related decorated functions    
 @app.route('/add', methods=['POST'])
+@login_required
 def add_feedback():
     user = g.user
     # print user
-    if not user or not session.get('logged_in'):
+    if user.is_anonymous() and not session.get('logged_in'):
         abort(401)
     p = Post (title=request.form['title'], text=request.form['text'], \
         points=0, userId=user.id)

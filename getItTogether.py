@@ -21,6 +21,7 @@ db = SQLAlchemy(app)
 # Use flask-login to handle users
 lm = LoginManager()
 lm.init_app(app)
+lm.login_view = 'login'
 
 import models
 import views

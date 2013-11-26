@@ -3,10 +3,11 @@ from flask import render_template, flash, redirect, request, session, \
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from getItTogether import app, db, lm
 from models import User, Post
+from forms import LoginForm
 
 '''
 Bugs/pending issues:
-login_user(user, remember = true): User remains logged in after restarting browser
+1. Create remember_me box to determine if user wants to be remembered
 '''
 
 def find_user(username, password):
@@ -37,6 +38,7 @@ def add_feedback():
         
 @app.route('/')
 def show_feedback():
+    flash('Help software companies stop sucking!')
     feedback = Post.query.all()
     # users = []
     refinedFeedback = []
@@ -49,18 +51,20 @@ def show_feedback():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
+    form = LoginForm()
     if g.user is not None and g.user.is_authenticated():
-        return redirect(url_for('show_feedback'))    
+        return redirect(url_for('show_feedback'))
     if request.method == 'POST':
         user = find_user(request.form['username'], request.form['password'])
         if not user:
             error = 'Invalid username or password'
         else:
-            login_user(user)
+            # Always remember user
+            login_user(user, remember = True)
             session['logged_in'] = True
             flash('You were logged in')
             return redirect(url_for('show_feedback'))
-    return render_template('login.html', error=error)
+    return render_template('login.html', error=error, form=form)
 
 @app.route('/logout')
 def logout():

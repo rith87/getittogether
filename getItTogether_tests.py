@@ -60,6 +60,7 @@ class getItTogetherTestCase(unittest.TestCase):
         assert b'No entries here so far' not in rv.data
         assert b'&lt;Hello&gt;' in rv.data
         assert b'<strong>HTML</strong> allowed here' in rv.data
+        self.logout()
         
     def test_post_without_login(self):
         """Test post message without login"""
@@ -79,6 +80,26 @@ class getItTogetherTestCase(unittest.TestCase):
             text='<strong>HTML</strong> allowed here'
         ), follow_redirects=True)
         assert GOOD_USERNAME in rv.data
+        self.logout()
+        
+    def test_vote(self):
+        """Test that any user can vote on an idea"""
+        self.login(GOOD_USERNAME, GOOD_PASSWORD)
+        rv = self.app.post('/add', data=dict(
+            title='<Hello>',
+            text='<strong>HTML</strong> allowed here'
+        ), follow_redirects=True)        
+        rv = self.app.post('/', data=dict(
+            upvote=1
+        ), follow_redirects=True)
+        # print rv.data
+        assert b'Thanks for your upvote!' in rv.data
+        rv = self.app.post('/', data=dict(
+            downvote=1
+        ), follow_redirects=True)
+        # print rv.data
+        assert b'Thanks for your downvote!' in rv.data        
+        self.logout()
         
 if __name__ == '__main__':
     unittest.main()

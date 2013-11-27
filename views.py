@@ -7,7 +7,10 @@ from forms import LoginForm
 
 '''
 Bugs/pending issues:
-1. Create remember_me box to determine if user wants to be remembered
+1. Add user registration functionality
+2. User profile page
+3. Use jquery to dynamically update the points
+4. Some weird bug with user logged in but cannot post message until logout_user is called
 '''
 
 def find_user(username, password):
@@ -36,12 +39,18 @@ def add_feedback():
     flash('New feedback was successfully posted')
     return redirect(url_for('show_feedback'))
         
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def show_feedback():
     flash('Help software companies stop sucking!')
     feedback = Post.query.all()
     # users = []
     refinedFeedback = []
+    if request.method == 'POST':
+        # print request.form
+        if 'upvote' in request.form.keys():
+            flash('Thanks for your upvote!')
+        elif 'downvote' in request.form.keys():
+            flash('Thanks for your downvote!')
     for item in feedback:
         # users.append(User.query.get(item.userId))
         refinedFeedback.append((item, User.query.get(item.userId)))
@@ -53,6 +62,7 @@ def login():
     error = None
     form = LoginForm()
     if g.user is not None and g.user.is_authenticated():
+        print 'Redirecting...'
         return redirect(url_for('show_feedback'))
     if request.method == 'POST':
         user = find_user(request.form['username'], request.form['password'])

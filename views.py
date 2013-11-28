@@ -19,6 +19,21 @@ def find_user(username, password):
     # print res
     return user
 
+def handle_vote(form):
+    # print request.form
+    vote = ''
+    if 'upvote' in form.keys():
+        vote = 'upvote'
+    elif 'downvote' in form.keys():
+        vote = 'downvote'
+    else:
+        print 'No vote?'
+        return    
+    flash('Thanks for your %s!' % vote)
+    post = Post.query.get(request.form[vote])
+    post.points += 1 if vote == 'upvote' else -1
+    db.session.commit()
+    
 # Flask-login related decorated functions    
 @lm.user_loader
 def load_user(id):
@@ -46,11 +61,7 @@ def show_feedback():
     # users = []
     refinedFeedback = []
     if request.method == 'POST':
-        # print request.form
-        if 'upvote' in request.form.keys():
-            flash('Thanks for your upvote!')
-        elif 'downvote' in request.form.keys():
-            flash('Thanks for your downvote!')
+        handle_vote(request.form)
     for item in feedback:
         # users.append(User.query.get(item.userId))
         refinedFeedback.append((item, User.query.get(item.userId)))

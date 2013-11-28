@@ -94,11 +94,13 @@ class getItTogetherTestCase(unittest.TestCase):
         ), follow_redirects=True)
         # print rv.data
         assert b'Thanks for your upvote!' in rv.data
+        assert b'1 points' in rv.data
         rv = self.app.post('/', data=dict(
             downvote=1
         ), follow_redirects=True)
         # print rv.data
         assert b'Thanks for your downvote!' in rv.data        
+        assert b'0 points' in rv.data        
         self.logout()
         
 if __name__ == '__main__':

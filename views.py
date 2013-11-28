@@ -3,14 +3,15 @@ from flask import render_template, flash, redirect, request, session, \
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from getItTogether import app, db, lm
 from models import User, Post
-from forms import LoginForm
+from forms import LoginForm, RegistrationForm
 
 '''
 Bugs/pending issues:
-1. Add user registration functionality
+1. Move user registration to open id?
 2. User profile page
 3. Use jquery to dynamically update the points
 4. Some weird bug with user logged in but cannot post message until logout_user is called
+5. Need to build some comments tree for comments on feedback
 '''
 
 def find_user(username, password):
@@ -67,6 +68,18 @@ def show_feedback():
         refinedFeedback.append((item, User.query.get(item.userId)))
     # return render_template('show_feedback.html', feedback=feedback, users=users)
     return render_template('show_feedback.html', feedback=refinedFeedback)    
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if request.method == 'POST':
+        flash('Thanks for registering!')
+        user = User(username = request.form['username'], 
+            password = request.form['password'],
+            email = request.form['email'])
+        db.session.add(user)
+        db.session.commit()
+    return render_template('register.html', form=form)
     
 @app.route('/login', methods=['GET', 'POST'])
 def login():

@@ -102,6 +102,20 @@ class getItTogetherTestCase(unittest.TestCase):
         assert b'Thanks for your downvote!' in rv.data        
         assert b'0 points' in rv.data        
         self.logout()
+    
+    def test_register_user(self):
+        """Test that any user can register and log in"""
+        rv = self.app.post('/register', data=dict(
+            username='lol',
+            password='wtf',
+            email='lol@wtf.com'
+        ), follow_redirects=True)
+        assert b'Thanks for registering!' in rv.data
+        rv = self.login('lol', 'wtf')
+        assert b'You were logged in' in rv.data
+        rv = self.logout()
+        assert b'You were logged out' in rv.data        
+        
         
 if __name__ == '__main__':
     unittest.main()

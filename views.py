@@ -69,6 +69,17 @@ def show_feedback():
     # return render_template('show_feedback.html', feedback=feedback, users=users)
     return render_template('show_feedback.html', feedback=refinedFeedback)    
 
+@app.route('/profile')
+@login_required
+def show_profile():
+    # user must be valid
+    user = g.user
+    posts = Post.query.filter_by(userId=user.id).all()
+    points = 0
+    for post in posts:
+        points += post.points
+    return render_template('show_profile.html', user=user, points=points)
+    
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()

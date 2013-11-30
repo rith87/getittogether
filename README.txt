@@ -20,3 +20,6 @@ Testing:
 
 1. Run all tests:
     python getItTogether_tests.py
+
+2. Run individual test:
+    python -m unittest getItTogether_tests.getItTogetherTestCase.test_user_points

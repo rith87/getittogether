@@ -21,7 +21,7 @@ def find_user(username, password):
     return user
 
 def handle_vote(form):
-    # print request.form
+    # print form
     vote = ''
     if 'upvote' in form.keys():
         vote = 'upvote'

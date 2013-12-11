@@ -1,7 +1,12 @@
-function update_score(postId)
+function update_score(postId, data)
 {
+    // get score
     var post = '#' + postId;
-    alert($(post).text())
+    // alert (data)
+    var newScore = $(data).find(post)
+    alert (newScore.text())
+    
+    // update score
 }
 
 function handle_vote(postId, upvote)
@@ -12,9 +17,9 @@ function handle_vote(postId, upvote)
     $.post('/', 
         vote
         ).done(
-        function()
+        function(data)
         {
-            update_score(postId);
+            update_score(postId, data);
         }
     );
 }

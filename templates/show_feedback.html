@@ -1,12 +1,14 @@
 {% extends "layout.html" %}
 {% block body %}
   {% if session.logged_in %}
-    <form action="{{ url_for('add_feedback') }}" method=post class=add-feedback>
+    <form enctype=multipart/form-data action="{{ url_for('add_feedback') }}" method=post class=add-feedback>
       <dl>
         <dt>Title:
         <dd><input type=text size=30 name=title>
         <dt>Text:
         <dd><textarea name=text rows=5 cols=40></textarea>
+        <dt>Screenshot:
+        <dd><input type=file name=screenshot>
         <dd><input type=submit value=Share>
       </dl>
     </form>
@@ -14,6 +16,9 @@
   <ul class=feedback>
   {% for item in feedback %}
     <li><h2>{{ item[0].title }} by {{ item[1].username }}</h2>{{ item[0].text|safe }}
+    {% if item[2] %}
+        <img src="{{ item[2] }}" alt="{{ item[3] }}">
+    {% endif %}
     <p>
         <button class="vote" type="submit" name="upvote" value={{ item[0].id }}>:)</button>
         <button class="vote" type="submit" name="downvote" value={{ item[0].id }}>:(</button>

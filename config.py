@@ -7,4 +7,4 @@ SECRET_KEY='development key'
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 
-UPLOADED_PHOTOS_DEST = 'media'
+UPLOADED_SCREENSHOTS_DEST = 'media'

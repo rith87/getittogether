@@ -24,8 +24,8 @@ lm = LoginManager()
 lm.init_app(app)
 lm.login_view = 'login'
 
-photos = UploadSet('photos', IMAGES)
-configure_uploads(app, photos)
+screenshots = UploadSet('screenshots', IMAGES)
+configure_uploads(app, screenshots)
 
 import models
 import views

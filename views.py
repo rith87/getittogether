@@ -1,10 +1,9 @@
 from flask import render_template, flash, redirect, request, session, \
     g, url_for, abort
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from getItTogether import app, db, lm, photos
-from models import User, Post, Photo
+from getItTogether import app, db, lm, screenshots
+from models import User, Post, Screenshot
 from forms import LoginForm, RegistrationForm
-import flask.ext.uploads
 
 '''
 Bugs/pending issues:
@@ -36,6 +35,14 @@ def handle_vote(form):
     post.points += 1 if vote == 'upvote' else -1
     db.session.commit()
     
+def handle_screenshot_upload(postId):
+    if request.method == 'POST' and 'screenshot' in request.files:
+        filename = screenshots.save(request.files['screenshot'])
+        ss = Screenshot(filename=filename, postId=postId)
+        db.session.add(ss)
+        db.session.commit()
+        flash("Screenshot saved.")    
+    
 # Flask-login related decorated functions    
 @lm.user_loader
 def load_user(id):
@@ -54,6 +61,7 @@ def add_feedback():
     db.session.add(p)
     db.session.commit()
     flash('New feedback was successfully posted')
+    handle_screenshot_upload(p.id)
     return redirect(url_for('show_feedback'))
         
 @app.route('/', methods=['GET', 'POST'])
@@ -65,30 +73,23 @@ def show_feedback():
     if request.method == 'POST':
         handle_vote(request.form)
     for item in feedback:
-        # users.append(User.query.get(item.userId))
-        refinedFeedback.append((item, User.query.get(item.userId)))
-    # return render_template('show_feedback.html', feedback=feedback, users=users)
-    return render_template('show_feedback.html', feedback=refinedFeedback)    
+        # check for screenshot
+        ssUrl = ''
+        ssTitle = ''
+        ss = Screenshot.query.filter(Screenshot.postId == item.id).first() 
+        if ss:
+            ssUrl = screenshots.url(ss.filename)
+            ssTitle = ss.filename
+        refinedFeedback.append((item, User.query.get(item.userId), ssUrl, ssTitle))
+    return render_template('show_feedback.html', feedback=refinedFeedback)
 
-@app.route('/upload', methods=['GET', 'POST'])
-def upload():
-    if request.method == 'POST' and 'photo' in request.files:
-        filename = photos.save(request.files['photo'])
-        photo = Photo(filename=filename, userId=g.user.id)
-        db.session.add(photo)
-        db.session.commit()
-        flash("Photo saved.")
-        return redirect(url_for('show', id=photo.id))
-    return render_template('upload.html')
-
-@app.route('/photo/<id>')
+@app.route('/screenshot/<id>')
 def show(id):
-    # photo = Photo.load(id)
-    photo = Photo.query.get(id)
-    if photo is None:
+    ss = Screenshot.query.get(id)
+    if ss is None:
         abort(404)
-    url = photos.url(photo.filename)
-    return render_template('show.html', url=url, photo=photo)
+    url = screenshots.url(ss.filename)
+    return render_template('show.html', url=url, screenshot=ss)
     
 @app.route('/profile')
 @login_required

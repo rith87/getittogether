@@ -15,23 +15,14 @@
   {% for item in feedback %}
     <li><h2>{{ item[0].title }} by {{ item[1].username }}</h2>{{ item[0].text|safe }}
     <p>
-        <form action="{{ url_for('show_feedback') }}" method=post>
-            <button <!-- class="vote" --> type="submit" name="upvote" value={{ item[0].id }}>:)</button>
-            <button <!-- class="vote" --> type="submit" name="downvote" value={{ item[0].id }}>:(</button>
-            <div id={{ item[0].id }}> {{ item[0].points }} points </div>
-        </form>
-        <!-- Uncomment to enable JQuery approach
         <button class="vote" type="submit" name="upvote" value={{ item[0].id }}>:)</button>
         <button class="vote" type="submit" name="downvote" value={{ item[0].id }}>:(</button>
         <div id={{ item[0].id }}> {{ item[0].points }} points </div>
-        -->
     </p>
   {% else %}
     <li><em>Unbelievable.  No feedback here so far</em>
   {% endfor %}
   </ul>
-  <div id="msgid">
-  </div>
   <script type=text/javascript src="{{
   url_for('static', filename='show_feedback.js') }}"></script>    
 {% endblock %}

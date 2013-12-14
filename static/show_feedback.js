@@ -1,17 +1,17 @@
 function update_score(postId, data)
 {
-    // get score
+    // get score from post request
     var post = '#' + postId;
-    // alert (data)
-    var newScore = $(data).find(post)
-    alert (newScore.text())
+    var newScore = $(data).find(post);
     
     // update score
+    $(post).text (newScore.text());
 }
 
 function handle_vote(postId, upvote)
 {
-    // WTF? The key is not a string??
+    // vote is a javascript object with data member up/downvote
+    // and its value is set to postId
     var vote = upvote ? { upvote : postId } 
                 : { downvote : postId };
     $.post('/', 
@@ -25,7 +25,6 @@ function handle_vote(postId, upvote)
 }
 
 $(document).ready(function(){
-    $("#msgid").html("Hello World from JQuery");
     $(".vote").click(function()
         {
             handle_vote($(this).attr('value'), 

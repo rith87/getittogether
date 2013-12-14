@@ -8,10 +8,9 @@ from forms import LoginForm, RegistrationForm
 '''
 Bugs/pending issues:
 1. Move user registration to open id?
-4. Some weird bug with user logged in but cannot post message until logout_user is called
+4. User logged in but cannot post message until logout_user is called
 5. Need to build some comments tree for comments on feedback
-6. Add feature to upload screenshots
-7. Password needs to be hidden
+8. Resize screenshots for main feedback page
 '''
 
 def find_user(username, password):

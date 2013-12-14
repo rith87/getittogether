@@ -9,6 +9,7 @@ from sqlite3 import dbapi2 as sqlite3
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
+from flask.ext.uploads import UploadSet, IMAGES, configure_uploads
 
 # create our little application :)
 app = Flask(__name__)
@@ -22,6 +23,9 @@ db = SQLAlchemy(app)
 lm = LoginManager()
 lm.init_app(app)
 lm.login_view = 'login'
+
+photos = UploadSet('photos', IMAGES)
+configure_uploads(app, photos)
 
 import models
 import views

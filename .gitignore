@@ -12,3 +12,4 @@ _mailinglist
 .tox
 *.commitmessage
 db_repository/
+*.jpg

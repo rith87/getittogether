@@ -35,3 +35,11 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post %r>' % (self.title)        
+        
+class Photo(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    filename = db.Column(db.String(128))
+    userId = db.Column(db.Integer, db.ForeignKey('user.id'))
+    
+    def __repr__(self):
+        return '<Photo %r>' % (self.title)       

@@ -1,17 +1,18 @@
 from flask import render_template, flash, redirect, request, session, \
     g, url_for, abort
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from getItTogether import app, db, lm
-from models import User, Post
+from getItTogether import app, db, lm, photos
+from models import User, Post, Photo
 from forms import LoginForm, RegistrationForm
+import flask.ext.uploads
 
 '''
 Bugs/pending issues:
 1. Move user registration to open id?
-2. User profile page
-3. Use jquery to dynamically update the points
 4. Some weird bug with user logged in but cannot post message until logout_user is called
 5. Need to build some comments tree for comments on feedback
+6. Add feature to upload screenshots
+7. Password needs to be hidden
 '''
 
 def find_user(username, password):
@@ -69,6 +70,26 @@ def show_feedback():
     # return render_template('show_feedback.html', feedback=feedback, users=users)
     return render_template('show_feedback.html', feedback=refinedFeedback)    
 
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    if request.method == 'POST' and 'photo' in request.files:
+        filename = photos.save(request.files['photo'])
+        photo = Photo(filename=filename, userId=g.user.id)
+        db.session.add(photo)
+        db.session.commit()
+        flash("Photo saved.")
+        return redirect(url_for('show', id=photo.id))
+    return render_template('upload.html')
+
+@app.route('/photo/<id>')
+def show(id):
+    # photo = Photo.load(id)
+    photo = Photo.query.get(id)
+    if photo is None:
+        abort(404)
+    url = photos.url(photo.filename)
+    return render_template('show.html', url=url, photo=photo)
+    
 @app.route('/profile')
 @login_required
 def show_profile():
@@ -110,7 +131,7 @@ def login():
             flash('You were logged in')
             return redirect(url_for('show_feedback'))
     return render_template('login.html', error=error, form=form)
-
+    
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)

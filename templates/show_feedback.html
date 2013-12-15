@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
-  {% if session.logged_in %}
+  {% if g.user.is_authenticated() %}
     <form enctype=multipart/form-data action="{{ url_for('add_feedback') }}" method=post class=add-feedback>
       <dl>
         <dt>Title:

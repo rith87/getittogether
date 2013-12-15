@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, request, session, \
+from flask import render_template, flash, redirect, request, \
     g, url_for, abort
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from getItTogether import app, db, lm, screenshots
@@ -8,9 +8,9 @@ from forms import LoginForm, RegistrationForm
 '''
 Bugs/pending issues:
 1. Move user registration to open id?
-4. User logged in but cannot post message until logout_user is called
 5. Need to build some comments tree for comments on feedback
 8. Resize screenshots for main feedback page
+9. Current user information is stored in year long cookie??
 '''
 
 def find_user(username, password):
@@ -53,7 +53,7 @@ def load_user(id):
 def add_feedback():
     user = g.user
     # print user
-    if user.is_anonymous() and not session.get('logged_in'):
+    if user.is_anonymous():
         abort(401)
     p = Post (title=request.form['title'], text=request.form['text'], \
         points=0, userId=user.id)
@@ -127,14 +127,12 @@ def login():
         else:
             # Always remember user
             login_user(user, remember = True)
-            session['logged_in'] = True
             flash('You were logged in')
             return redirect(url_for('show_feedback'))
     return render_template('login.html', error=error, form=form)
     
 @app.route('/logout')
 def logout():
-    session.pop('logged_in', None)
     logout_user()
     flash('You were logged out')
     return redirect(url_for('show_feedback')) 

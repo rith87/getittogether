@@ -17,7 +17,7 @@
   {% for item in feedback %}
     <li><h2>{{ item[0].title }} by {{ item[1].username }}</h2>{{ item[0].text|safe }}
     {% if item[2] %}
-        <img src="{{ item[2] }}" alt="{{ item[3] }}">
+        <img src="{{ item[2] }}" alt="{{ item[3] }}" class="thumbnail">
     {% endif %}
     <p>
         <button class="vote" type="submit" name="upvote" value={{ item[0].id }}>:)</button>

@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if g.user.is_authenticated() %}
+    <form enctype=multipart/form-data action="{{ url_for('add_feedback') }}" method=post class=add-feedback>
+      <dl>
+        <dt>Title:
+        <dd><input type=text size=30 name=title>
+        <dt>Text:
+        <dd><textarea name=text rows=5 cols=40></textarea>
+        <dt>Screenshot:
+        <dd><input type=file name=screenshot>
+        <dd><input type=submit value=Share>
+      </dl>
+    </form>
+  {% endif %}
+{% endblock %}

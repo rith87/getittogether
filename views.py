@@ -48,13 +48,15 @@ def load_user(id):
     return User.query.get(int(id))    
     
 # App related decorated functions    
-@app.route('/add', methods=['POST'])
+@app.route('/add', methods=['GET', 'POST'])
 @login_required
 def add_feedback():
     user = g.user
     # print user
     if user.is_anonymous():
         abort(401)
+    if request.method == 'GET':
+        return render_template('add_feedback.html')
     p = Post (title=request.form['title'], text=request.form['text'], \
         points=0, userId=user.id)
     db.session.add(p)
@@ -62,7 +64,7 @@ def add_feedback():
     flash('New feedback was successfully posted')
     handle_screenshot_upload(p.id)
     return redirect(url_for('show_feedback'))
-        
+
 @app.route('/', methods=['GET', 'POST'])
 def show_feedback():
     flash('Help software companies stop sucking!')

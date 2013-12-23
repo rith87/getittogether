@@ -9,8 +9,8 @@ from forms import LoginForm, RegistrationForm
 Bugs/pending issues:
 1. Move user registration to open id?
 5. Need to build some comments tree for comments on feedback
-8. Resize screenshots for main feedback page
 9. Current user information is stored in year long cookie??
+10. Need to implement logging for messages
 '''
 
 def find_user(username, password):
@@ -57,6 +57,11 @@ def add_feedback():
         abort(401)
     if request.method == 'GET':
         return render_template('add_feedback.html')
+    if 'test' in request.form.keys() and request.form['test']:
+        filename = screenshots.save(request.files['screenshot'])
+        ssUrl = screenshots.url(filename)
+        return render_template('show.html', title=request.form['title'], \
+            text=request.form['text'], url=ssUrl, filename=filename)
     p = Post (title=request.form['title'], text=request.form['text'], \
         points=0, userId=user.id)
     db.session.add(p)
@@ -83,14 +88,6 @@ def show_feedback():
             ssTitle = ss.filename
         refinedFeedback.append((item, User.query.get(item.userId), ssUrl, ssTitle))
     return render_template('show_feedback.html', feedback=refinedFeedback)
-
-@app.route('/screenshot/<id>')
-def show(id):
-    ss = Screenshot.query.get(id)
-    if ss is None:
-        abort(404)
-    url = screenshots.url(ss.filename)
-    return render_template('show.html', url=url, screenshot=ss)
     
 @app.route('/profile')
 @login_required

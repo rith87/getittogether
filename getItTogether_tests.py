@@ -39,11 +39,13 @@ class getItTogetherTestCase(unittest.TestCase):
     def get_profile(self):
         return self.app.get('/profile', follow_redirects=True)
         
-    def post(self):
-        return self.app.post('/add', data=dict(
-            title='<Hello>',
-            text='<strong>HTML</strong> allowed here'
-        ), follow_redirects=True)
+    def post(self, partial):
+        data = {}
+        data['title'] = '<Hello>'
+        data['text'] = '<strong>HTML</strong> allowed here'
+        if partial:
+            data['test'] = True
+        return self.app.post('/add', data=data, follow_redirects=True)
         
     def vote(self, id, up):
         if up:
@@ -71,16 +73,25 @@ class getItTogetherTestCase(unittest.TestCase):
     def test_successful_post(self):
         """Test that messages work"""
         self.login(GOOD_USERNAME, GOOD_PASSWORD)
-        rv = self.post()
+        rv = self.post(False)
         # print rv.data
         assert b'No entries here so far' not in rv.data
         assert b'&lt;Hello&gt;' in rv.data
+        assert b'feedbackBox' in rv.data
         assert b'<strong>HTML</strong> allowed here' in rv.data
         self.logout()
         
+    def test_successful_partial_post(self):
+        """Test the partial post to staging area"""
+        self.login(GOOD_USERNAME, GOOD_PASSWORD)
+        rv = self.post(True)
+        # print rv.data
+        assert b'Staging feedback' in rv.data
+        assert b'feedbackBox' not in rv.data
+        
     def test_post_without_login(self):
         """Test post message without login"""
-        rv = self.post()
+        rv = self.post(False)
         # assert b'401 Unauthorized' in rv.data
         assert b'Login' in rv.data
         assert b'Username:' in rv.data
@@ -88,14 +99,15 @@ class getItTogetherTestCase(unittest.TestCase):
     def test_post_author(self):
         """Test that messages have the correct author"""
         self.login(GOOD_USERNAME, GOOD_PASSWORD)
-        rv = self.post()
+        rv = self.post(False)
+        # print rv.data
         assert GOOD_USERNAME in rv.data
         self.logout()
         
     def test_vote(self):
         """Test that any user can vote on an idea"""
         self.login(GOOD_USERNAME, GOOD_PASSWORD)
-        rv = self.post()
+        rv = self.post(False)
         rv = self.vote(1, True)
         # print rv.data
         assert b'Thanks for your upvote!' in rv.data
@@ -122,13 +134,13 @@ class getItTogetherTestCase(unittest.TestCase):
     def test_user_points(self):
         """Test that the users points are tallied correctly"""
         self.login(GOOD_USERNAME, GOOD_PASSWORD)        
-        rv = self.post()
+        rv = self.post(False)
         rv = self.get_profile()
         assert b'Points: 0' in rv.data
         rv = self.vote(1, True) 
         rv = self.get_profile()
         assert b'Points: 1' in rv.data        
-        rv = self.post()
+        rv = self.post(False)
         rv = self.vote(1, True) 
         rv = self.get_profile()
         assert b'Points: 2' in rv.data        

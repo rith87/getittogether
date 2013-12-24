@@ -11,6 +11,7 @@ Bugs/pending issues:
 5. Need to build some comments tree for comments on feedback
 9. Current user information is stored in year long cookie??
 10. Need to implement logging for messages
+11. Show results sorted by points
 '''
 
 def find_user(username, password):
@@ -53,13 +54,18 @@ def load_user(id):
 def add_feedback():
     user = g.user
     # print user
+    # print request.form
+    # print request.files
     if user.is_anonymous():
         abort(401)
     if request.method == 'GET':
         return render_template('add_feedback.html')
     if 'test' in request.form.keys() and request.form['test']:
-        filename = screenshots.save(request.files['screenshot'])
-        ssUrl = screenshots.url(filename)
+        filename = None
+        ssUrl = None
+        if 'screenshot' in request.files:
+            filename = screenshots.save(request.files['screenshot'])
+            ssUrl = screenshots.url(filename)
         return render_template('show.html', title=request.form['title'], \
             text=request.form['text'], url=ssUrl, filename=filename)
     p = Post (title=request.form['title'], text=request.form['text'], \

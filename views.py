@@ -10,8 +10,10 @@ Bugs/pending issues:
 1. Move user registration to open id?
 5. Need to build some comments tree for comments on feedback
 9. Current user information is stored in year long cookie??
-10. Need to implement logging for messages
-11. Show results sorted by points
+10. Need to implement logging for errors/warnings/info
+12. Need admin account
+13. Posts should have time stamps because we want to sort by time/points
+14. How to handle multiple pages of feedback?
 '''
 
 def find_user(username, password):
@@ -43,6 +45,16 @@ def handle_screenshot_upload(postId):
         db.session.commit()
         flash("Screenshot saved.")    
     
+def find_screenshot_from_post(postId):
+    # check for screenshot
+    ssUrl = None
+    ssTitle = None
+    ss = Screenshot.query.filter(Screenshot.postId == postId).first() 
+    if ss:
+        ssUrl = screenshots.url(ss.filename)
+        ssTitle = ss.filename
+    return (ssUrl, ssTitle)
+    
 # Flask-login related decorated functions    
 @lm.user_loader
 def load_user(id):
@@ -61,6 +73,7 @@ def add_feedback():
     if request.method == 'GET':
         return render_template('add_feedback.html')
     if 'test' in request.form.keys() and request.form['test']:
+        flash('Staging feedback')
         filename = None
         ssUrl = None
         if 'screenshot' in request.files:
@@ -79,22 +92,23 @@ def add_feedback():
 @app.route('/', methods=['GET', 'POST'])
 def show_feedback():
     flash('Help software companies stop sucking!')
-    feedback = Post.query.all()
+    feedback = Post.query.order_by(Post.points.desc()).limit(10).all()
     # users = []
     refinedFeedback = []
     if request.method == 'POST':
         handle_vote(request.form)
     for item in feedback:
-        # check for screenshot
-        ssUrl = ''
-        ssTitle = ''
-        ss = Screenshot.query.filter(Screenshot.postId == item.id).first() 
-        if ss:
-            ssUrl = screenshots.url(ss.filename)
-            ssTitle = ss.filename
+        (ssUrl, ssTitle) = find_screenshot_from_post(item.id)
         refinedFeedback.append((item, User.query.get(item.userId), ssUrl, ssTitle))
     return render_template('show_feedback.html', feedback=refinedFeedback)
-    
+
+@app.route('/post/<int:post_id>')
+def show_post(post_id):
+    post = Post.query.get(post_id)
+    (ssUrl, ssTitle) = find_screenshot_from_post(post_id)
+    return render_template('show.html', title=post.title, text=post.text, \
+        url=ssUrl, filename=ssTitle)
+
 @app.route('/profile')
 @login_required
 def show_profile():

@@ -36,6 +36,7 @@ a:active {text-decoration:underline;}
 .feedbackBox
 {
     overflow:hidden;
+    margin:0.5em;
 }
 .thumbnailHolder
 {
@@ -43,4 +44,5 @@ a:active {text-decoration:underline;}
     height:160px;
     overflow:auto;
     float:left;
+    margin-right:0.5em;
 }

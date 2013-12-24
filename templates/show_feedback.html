@@ -3,7 +3,7 @@
   <ul class=feedback>
   {% for item in feedback %}
     <div class="feedbackBox">
-    <li><h2>{{ item[0].title }} by {{ item[1].username }}</h2>
+    <li><h2><a href="{{ url_for('show_post', post_id=item[0].id) }}">{{ item[0].title }} by {{ item[1].username }}</a></h2>
     {% if item[2] %}
         <div class="thumbnailHolder">
             <img src="{{ item[2] }}" alt="{{ item[3] }}" class="thumbnail">

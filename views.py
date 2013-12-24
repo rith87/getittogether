@@ -105,6 +105,8 @@ def show_feedback():
 @app.route('/post/<int:post_id>')
 def show_post(post_id):
     post = Post.query.get(post_id)
+    if not post:
+        return redirect(url_for('show_feedback'))
     (ssUrl, ssTitle) = find_screenshot_from_post(post_id)
     return render_template('show.html', title=post.title, text=post.text, \
         url=ssUrl, filename=ssTitle)

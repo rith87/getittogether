@@ -103,7 +103,12 @@ class getItTogetherTestCase(unittest.TestCase):
         # print rv.data
         assert GOOD_USERNAME in rv.data
         self.logout()
-        
+    
+    def test_non_post(self):
+        rv = self.app.get('/post/1')
+        # print rv.data
+        assert b'Redirecting' in rv.data
+    
     def test_vote(self):
         """Test that any user can vote on an idea"""
         self.login(GOOD_USERNAME, GOOD_PASSWORD)

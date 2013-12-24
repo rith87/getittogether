@@ -2,10 +2,11 @@
 $(document).ready(function() { 
     var options = { 
         // target:        '#output1',   // target element(s) to be updated with server response 
-        beforeSubmit:  showRequest,  // pre-submit callback 
-        success:       showResponse  // post-submit callback 
+        beforeSubmit:   showRequest,     // pre-submit callback 
+        success:        showResponse    // post-submit callback 
  
         // other available options: 
+        //uploadProgress: handle_upload_progress    // re-enable for progress bar
         //url:       url         // override for form's 'action' attribute 
         //type:      type        // 'get' or 'post', override for form's 'method' attribute 
         //dataType:  null        // 'xml', 'script', or 'json' (expected server response type) 
@@ -19,6 +20,12 @@ $(document).ready(function() {
     // bind form using 'ajaxForm' 
     $('.add-feedback').ajaxForm(options); 
 }); 
+
+function handle_upload_progress(event, position, total, percentComplete)
+{
+    alert('Percent:' + percentComplete);
+    $('#output1').text(percentComplete + '% complete');
+}
  
 // pre-submit callback 
 function showRequest(formData, jqForm, options) { 
@@ -30,7 +37,7 @@ function showRequest(formData, jqForm, options) {
     // DOM element for the form do this: 
     // var formElement = jqForm[0]; 
  
-    alert('About to submit: \n\n' + queryString); 
+    // alert('About to submit: \n\n' + queryString); 
  
     // here we could return false to prevent the form from being submitted; 
     // returning anything other than false will allow the form submit to continue 

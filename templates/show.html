@@ -6,4 +6,40 @@
         <img src="{{ url }}" alt="{{ filename }}">
     {% endif %}
     <p>{{ text }}</p>
+    
+    <div id="editor"></div>
+    <div id="data"></div>
+
+    <script type="text/javascript" src="{{
+    url_for('static', filename='add_feedback.js') }}"></script>
+    <script type="text/javascript" src="{{
+    url_for('static', filename='raphael.min.js') }}"></script>
+    <script type="text/javascript" src="{{ 
+    url_for('static', filename='json2.js') }}"></script>
+    <script type="text/javascript" src="{{
+    url_for('static', filename='raphael.sketchpad.js') }}"></script>
+
+    <script type="text/javascript">
+        // HACK for deprecated/disabled jquery browser method
+        jQuery.browser = {};
+        (function () {
+            jQuery.browser.msie = false;
+            jQuery.browser.version = 0;
+            if (navigator.userAgent.match(/MSIE ([0-9]+)\./)) {
+                jQuery.browser.msie = true;
+                jQuery.browser.version = RegExp.$1;
+            }
+        })();
+    
+        var sketchpad = Raphael.sketchpad("editor", {
+            width: 400,
+            height: 400,
+            editing: true
+        });
+
+        // When the sketchpad changes, update the input field.
+        sketchpad.change(function() {
+            $("#data").val(sketchpad.json());
+        });
+    </script>    
 {% endblock %}

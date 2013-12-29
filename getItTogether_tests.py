@@ -55,7 +55,21 @@ class getItTogetherTestCase(unittest.TestCase):
         else:
             return self.app.post('/', data=dict(
                 downvote=id
-            ), follow_redirects=True)        
+            ), follow_redirects=True)
+
+    def set_notes(self, id):
+        data = {}
+        data['postId'] = id
+        data['notes'] = '{text:wtf}'
+        data['set'] = True
+        self.app.post('/notes', data=data, follow_redirects=True)
+        
+    def get_notes(self, id):
+        data = {}
+        data['postId'] = id
+        data['notes'] = ''
+        data['set'] = False
+        return self.app.post('/notes', data=data, follow_redirects=True)        
         
     def test_successful_login_logout(self):
         """Make sure login and logout succeeds"""
@@ -88,6 +102,18 @@ class getItTogetherTestCase(unittest.TestCase):
         # print rv.data
         assert b'Staging feedback' in rv.data
         assert b'feedbackBox' not in rv.data
+        
+    def test_post_annotations(self):
+        """Test that annotations can be saved and retrieved"""
+        self.login(GOOD_USERNAME, GOOD_PASSWORD)
+        rv = self.post(False)
+        # print rv.data
+        assert b'Staging feedback' not in rv.data
+        assert b'feedbackBox' in rv.data
+        rv = self.set_notes(0)
+        rv = self.get_notes(0)
+        # print rv.data
+        assert b'wtf' in rv.data
         
     def test_post_without_login(self):
         """Test post message without login"""

@@ -6,8 +6,11 @@
         <img src="{{ url }}" alt="{{ filename }}" class="annotatable">
     {% endif %}
     <p>{{ text }}</p>
+    <!-- <div id="test">{"src":"http://127.0.0.1:5000/_uploads/screenshots/leroy.jpg","text":"lol","shapes":[{"type":"rect","geometry":{"x":0.425,"width":0.10833333333333334,"y":0.4106666666666667,"height":0.0733333333333333}}],"context":"http://127.0.0.1:5000/post/7"}</div> -->
     
-    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='annotorious.css') }}">
-    <script type=text/javascript src="{{
-    url_for('static', filename='annotorious.debug.js') }}"></script>    
+    <link rel=stylesheet type=text/css href="//annotorious.github.com/latest/annotorious.css">
+    <script type=text/javascript src="
+        //annotorious.github.com/latest/annotorious.min.js"></script>
+    <script type=text/javascript src="
+        {{ url_for('static', filename='add_annotations.js') }}"></script>
 {% endblock %}

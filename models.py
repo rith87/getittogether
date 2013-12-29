@@ -42,4 +42,12 @@ class Screenshot(db.Model):
     postId = db.Column(db.Integer, db.ForeignKey('post.id'))
     
     def __repr__(self):
-        return '<Screenshot %r>' % (self.title)
+        return '<Screenshot %r>' % (self.id)
+        
+class Note(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    note = db.Column(db.String(512))
+    postId = db.Column(db.Integer, db.ForeignKey('post.id'))    
+    
+    def __repr__(self):
+        return '<Note %r>' % (self.id)

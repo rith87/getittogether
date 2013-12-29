@@ -1,8 +1,8 @@
 from flask import render_template, flash, redirect, request, \
-    g, url_for, abort
+    g, url_for, abort, make_response
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from getItTogether import app, db, lm, screenshots
-from models import User, Post, Screenshot
+from models import User, Post, Screenshot, Note
 from forms import LoginForm, RegistrationForm
 
 '''
@@ -85,10 +85,35 @@ def add_feedback():
         points=0, userId=user.id)
     db.session.add(p)
     db.session.commit()
+    # print p.id
     flash('New feedback was successfully posted')
     handle_screenshot_upload(p.id)
     return redirect(url_for('show_feedback'))
 
+@app.route('/notes', methods=['POST'])
+@login_required
+def handle_notes():
+    if 'postId' not in request.form.keys() or \
+        'notes' not in request.form.keys() or \
+        'set' not in request.form.keys():
+        abort(400)
+    # print 'Handling notes'
+    # TODO: should enable for multiple notes on send/receive
+    postId = request.form['postId']
+    # TODO: Validate if post ID exists!
+    if request.form['set'] == 'True':
+        note = request.form['notes']
+        n = Note (note=note, postId=postId)
+        db.session.add(n)
+        db.session.commit()
+        notes = Note.query.filter(Note.postId==postId).first()
+        # print notes.note
+        return redirect(url_for('show_post', post_id=postId))    
+    else:
+        notes = Note.query.filter(Note.postId==postId).first()
+        # print make_response(notes.note)
+        return make_response(notes.note)
+    
 @app.route('/', methods=['GET', 'POST'])
 def show_feedback():
     flash('Help software companies stop sucking!')

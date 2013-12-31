@@ -14,14 +14,13 @@ function handle_vote(postId, upvote)
     // and its value is set to postId
     var vote = upvote ? { upvote : postId } 
                 : { downvote : postId };
-    $.post('/', 
-        vote
-        ).done(
-        function(data)
-        {
-            update_score(postId, data);
-        }
-    );
+    $.post('/', vote)
+		.done(
+			function(data)
+			{
+				update_score(postId, data);
+			}
+		);
 }
 
 $(document).ready(function(){

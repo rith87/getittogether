@@ -72,6 +72,9 @@ def add_feedback():
         abort(401)
     if request.method == 'GET':
         return render_template('add_feedback.html')
+    # TODO: What ID will this post be? Since there is no commit?
+    p = Post (title=request.form['title'], text=request.form['text'], \
+        points=0, userId=user.id)
     if 'test' in request.form.keys() and request.form['test']:
         flash('Staging feedback')
         filename = None
@@ -79,10 +82,8 @@ def add_feedback():
         if 'screenshot' in request.files:
             filename = screenshots.save(request.files['screenshot'])
             ssUrl = screenshots.url(filename)
-        return render_template('show.html', title=request.form['title'], \
-            text=request.form['text'], url=ssUrl, filename=filename)
-    p = Post (title=request.form['title'], text=request.form['text'], \
-        points=0, userId=user.id)
+        return render_template('show.html', post=p,
+            url=ssUrl, filename=filename)
     db.session.add(p)
     db.session.commit()
     # print p.id
@@ -98,7 +99,7 @@ def handle_notes():
         'set' not in request.form.keys():
         abort(400)
     # print 'Handling notes'
-    # TODO: should enable for multiple notes on send/receive
+    # TODO: Enable for multiple notes on send/receive
     postId = request.form['postId']
     # TODO: Validate if post ID exists!
     if request.form['set'] == 'True':
@@ -106,13 +107,14 @@ def handle_notes():
         n = Note (note=note, postId=postId)
         db.session.add(n)
         db.session.commit()
-        notes = Note.query.filter(Note.postId==postId).first()
-        # print notes.note
+        # print n.note
         return redirect(url_for('show_post', post_id=postId))    
     else:
         notes = Note.query.filter(Note.postId==postId).first()
-        # print make_response(notes.note)
-        return make_response(notes.note)
+        notesResponse = ''
+        if notes:
+            notesResponse = notes.note
+        return make_response(notesResponse)
     
 @app.route('/', methods=['GET', 'POST'])
 def show_feedback():
@@ -133,8 +135,7 @@ def show_post(post_id):
     if not post:
         return redirect(url_for('show_feedback'))
     (ssUrl, ssTitle) = find_screenshot_from_post(post_id)
-    return render_template('show.html', title=post.title, text=post.text, \
-        url=ssUrl, filename=ssTitle)
+    return render_template('show.html', post=post, url=ssUrl, filename=ssTitle)
 
 @app.route('/profile')
 @login_required

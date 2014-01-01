@@ -37,13 +37,33 @@ def handle_vote(form):
     post.points += 1 if vote == 'upvote' else -1
     db.session.commit()
     
-def handle_screenshot_upload(postId):
-    if request.method == 'POST' and 'screenshot' in request.files:
-        filename = screenshots.save(request.files['screenshot'])
+def handle_screenshot_upload(postId, filename):
+    if request.method == 'POST' and filename:
+        print 'Uploading screenshot'
         ss = Screenshot(filename=filename, postId=postId)
         db.session.add(ss)
         db.session.commit()
         flash("Screenshot saved.")    
+    
+def handle_notes_upload(postId):    
+    # TODO: Enable for multiple notes on send/receive
+    # TODO: Validate if post ID exists!
+    if 'set' in request.form and request.form['set'] == 'True':
+        # print 'Uploading notes'
+        note = request.form['notes']
+        n = Note (note=note, postId=postId)
+        db.session.add(n)
+        db.session.commit()
+        # print n.note
+        return redirect(url_for('show_post', post_id=postId))    
+    else:
+        # print 'Retrieving notes'
+        notes = Note.query.filter(Note.postId==postId).first()
+        # print notes.note
+        notesResponse = ''
+        if notes:
+            notesResponse = notes.note
+        return make_response(notesResponse)    
     
 def find_screenshot_from_post(postId):
     # check for screenshot
@@ -88,9 +108,12 @@ def add_feedback():
     db.session.commit()
     # print p.id
     flash('New feedback was successfully posted')
-    handle_screenshot_upload(p.id)
+    if 'filename' in request.form.keys():
+        handle_screenshot_upload(p.id, request.form['filename'])
+    # handle_screenshot_upload(p.id, request.form['filename'] if 'filename' in request.form else None)
+    handle_notes_upload(p.id)
     return redirect(url_for('show_feedback'))
-
+    
 @app.route('/notes', methods=['POST'])
 @login_required
 def handle_notes():
@@ -99,22 +122,7 @@ def handle_notes():
         'set' not in request.form.keys():
         abort(400)
     # print 'Handling notes'
-    # TODO: Enable for multiple notes on send/receive
-    postId = request.form['postId']
-    # TODO: Validate if post ID exists!
-    if request.form['set'] == 'True':
-        note = request.form['notes']
-        n = Note (note=note, postId=postId)
-        db.session.add(n)
-        db.session.commit()
-        # print n.note
-        return redirect(url_for('show_post', post_id=postId))    
-    else:
-        notes = Note.query.filter(Note.postId==postId).first()
-        notesResponse = ''
-        if notes:
-            notesResponse = notes.note
-        return make_response(notesResponse)
+    return handle_notes_upload(request.form['postId'])
     
 @app.route('/', methods=['GET', 'POST'])
 def show_feedback():

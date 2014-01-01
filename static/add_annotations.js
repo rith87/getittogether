@@ -18,17 +18,17 @@ jQuery(document).ready(function($) {
 		notes : '',
 		set : 'False'
 	};
-	$.post('/notes', params)
-		.done(
-			function(data)
-			{
-				// probably need to add annotations asynchronously
-				add_annotation(data);
-			}
-		);
     $('.annotatable').load(function ()
     {
         anno.makeAnnotatable($('.annotatable')[0]);        
+        $.post('/notes', params)
+            .done(
+                function(data)
+                {
+                    // probably need to add annotations asynchronously
+                    add_annotation(data);
+                }
+            );        
     });
     anno.addHandler('onAnnotationCreated', function(annotation) {
         annotations = anno.getAnnotations();

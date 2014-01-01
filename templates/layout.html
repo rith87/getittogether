@@ -4,6 +4,10 @@
 <!-- Move loading of JQuery to just before </body> -->
 <script type=text/javascript src="{{
 url_for('static', filename='jquery-1.10.2.js') }}"></script>
+<!-- Move annotorious to files that need it -->
+<link rel=stylesheet type=text/css href="//annotorious.github.com/latest/annotorious.css">
+<script type=text/javascript src="
+    //annotorious.github.com/latest/annotorious.min.js"></script>
 <div class=page>
   <h1><a href="{{ url_for('show_feedback') }}">Get It Together!</a></h1>
   <div class=metanav>

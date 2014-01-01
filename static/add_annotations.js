@@ -26,6 +26,10 @@ jQuery(document).ready(function($) {
 				add_annotation(data);
 			}
 		);
+    $('.annotatable').load(function ()
+    {
+        anno.makeAnnotatable($('.annotatable')[0]);        
+    });
     anno.addHandler('onAnnotationCreated', function(annotation) {
         annotations = anno.getAnnotations();
         for (var i = 0; i < annotations.length; i++)

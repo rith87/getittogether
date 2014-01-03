@@ -46,7 +46,7 @@ class Screenshot(db.Model):
         
 class Note(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    note = db.Column(db.String(512))
+    note = db.Column(db.String(1024))
     postId = db.Column(db.Integer, db.ForeignKey('post.id'))    
     
     def __repr__(self):

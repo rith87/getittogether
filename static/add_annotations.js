@@ -1,9 +1,22 @@
+function parse_notes(notes)
+{
+    var parsedNotes = notes.split(";");
+    parsedNotes.splice(parsedNotes.length - 1, 1);
+    return parsedNotes;
+}
+
 function add_annotation(data)
 {
 	// TODO: Does this conflict with Jquery?
 	if (data)
 	{
-		anno.addAnnotation(JSON.parse(data));
+        // alert(data);
+        var parsedNotes = parse_notes(data);
+        for (var i = 0; i < parsedNotes.length; i++)
+        {
+            // alert(parsedNotes[i]);
+            anno.addAnnotation(JSON.parse(parsedNotes[i]));
+        }
 	}
 }
 
@@ -25,6 +38,7 @@ jQuery(document).ready(function($) {
             .done(
                 function(data)
                 {
+                    console.log(data);
                     // probably need to add annotations asynchronously
                     add_annotation(data);
                 }
@@ -32,11 +46,13 @@ jQuery(document).ready(function($) {
     });
     anno.addHandler('onAnnotationCreated', function(annotation) {
         annotations = anno.getAnnotations();
+        var notes = '';
         for (var i = 0; i < annotations.length; i++)
         {
             // alert(JSON.stringify(annotations[i]));
-            $('input[name=notes]').val(JSON.stringify(annotations[i]));
+            notes += (JSON.stringify(annotations[i]) + ';');
         }
+        $('input[name=notes]').val(notes);
     });
 });
 

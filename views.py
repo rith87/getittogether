@@ -45,8 +45,7 @@ def handle_screenshot_upload(postId, filename):
         db.session.commit()
         flash("Screenshot saved.")    
     
-def handle_notes_upload(postId):    
-    # TODO: Enable for multiple notes on send/receive
+def handle_notes_upload(postId):
     # TODO: Validate if post ID exists!
     if 'set' in request.form and request.form['set'] == 'True':
         # print 'Uploading notes'
@@ -55,14 +54,17 @@ def handle_notes_upload(postId):
         db.session.add(n)
         db.session.commit()
         # print n.note
+        # print n.id
+        # print n.postId
         return redirect(url_for('show_post', post_id=postId))    
     else:
-        # print 'Retrieving notes'
+        # 'Retrieving notes %d' % int(postId)
         notes = Note.query.filter(Note.postId==postId).first()
-        # print notes.note
+        # print notes
         notesResponse = ''
         if notes:
             notesResponse = notes.note
+        # print notesResponse
         return make_response(notesResponse)    
     
 def find_screenshot_from_post(postId):
@@ -122,6 +124,7 @@ def handle_notes():
         'set' not in request.form.keys():
         abort(400)
     # print 'Handling notes'
+    # print 'Post id: %s' % request.form['postId']
     return handle_notes_upload(request.form['postId'])
     
 @app.route('/', methods=['GET', 'POST'])

@@ -38,7 +38,7 @@ jQuery(document).ready(function($) {
             .done(
                 function(data)
                 {
-                    console.log(data);
+                    // console.log(data);
                     // probably need to add annotations asynchronously
                     add_annotation(data);
                 }

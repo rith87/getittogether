@@ -43,6 +43,7 @@ class getItTogetherTestCase(unittest.TestCase):
         data = {}
         data['title'] = '<Hello>'
         data['text'] = '<strong>HTML</strong> allowed here'
+        data['set'] = 'True'
         if partial:
             data['test'] = True
         return self.app.post('/add', data=data, follow_redirects=True)

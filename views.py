@@ -4,6 +4,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from getItTogether import app, db, lm, screenshots
 from models import User, Post, Screenshot, Note
 from forms import LoginForm, RegistrationForm
+import inspect
 
 '''
 Bugs/pending issues:
@@ -14,7 +15,12 @@ Bugs/pending issues:
 12. Need admin account
 13. Posts should have time stamps because we want to sort by time/points
 14. How to handle multiple pages of feedback?
+15. Show user posts in user profile page
 '''
+
+def handle_request_error(error):
+    print '%s: %s' % (inspect.stack()[1][3], request.form)
+    abort(error)
 
 def find_user(username, password):
     """Checks if user is registered"""
@@ -47,25 +53,18 @@ def handle_screenshot_upload(postId, filename):
     
 def handle_notes_upload(postId):
     # TODO: Validate if post ID exists!
-    if 'set' in request.form and request.form['set'] == 'True':
-        # print 'Uploading notes'
-        note = request.form['notes']
+    if request.form.get('set') != 'True':
+        handle_request_error(400)
+    # print 'Uploading notes'
+    note = request.form.get('notes')
+    if note:
         n = Note (note=note, postId=postId)
         db.session.add(n)
         db.session.commit()
         # print n.note
         # print n.id
         # print n.postId
-        return redirect(url_for('show_post', post_id=postId))    
-    else:
-        # 'Retrieving notes %d' % int(postId)
-        notes = Note.query.filter(Note.postId==postId).first()
-        # print notes
-        notesResponse = ''
-        if notes:
-            notesResponse = notes.note
-        # print notesResponse
-        return make_response(notesResponse)    
+    return redirect(url_for('show_post', post_id=postId))    
     
 def find_screenshot_from_post(postId):
     # check for screenshot
@@ -76,6 +75,18 @@ def find_screenshot_from_post(postId):
         ssUrl = screenshots.url(ss.filename)
         ssTitle = ss.filename
     return (ssUrl, ssTitle)
+    
+def find_notes_from_post(postId):
+    if request.form.get('set') == 'True':
+        handle_request_error(400)
+    # 'Retrieving notes %d' % int(postId)
+    notes = Note.query.filter(Note.postId==postId).first()
+    # print notes
+    notesResponse = ''
+    if notes:
+        notesResponse = notes.note
+    # print notesResponse
+    return make_response(notesResponse)
     
 # Flask-login related decorated functions    
 @lm.user_loader
@@ -91,13 +102,12 @@ def add_feedback():
     # print request.form
     # print request.files
     if user.is_anonymous():
-        abort(401)
+        handle_request_error(401)
     if request.method == 'GET':
         return render_template('add_feedback.html')
-    # TODO: What ID will this post be? Since there is no commit?
     p = Post (title=request.form['title'], text=request.form['text'], \
         points=0, userId=user.id)
-    if 'test' in request.form.keys() and request.form['test']:
+    if request.form.get('test'):
         flash('Staging feedback')
         filename = None
         ssUrl = None
@@ -122,10 +132,13 @@ def handle_notes():
     if 'postId' not in request.form.keys() or \
         'notes' not in request.form.keys() or \
         'set' not in request.form.keys():
-        abort(400)
+        handle_request_error(400)
     # print 'Handling notes'
     # print 'Post id: %s' % request.form['postId']
-    return handle_notes_upload(request.form['postId'])
+    if request.form['set'] == 'True':
+        return handle_notes_upload(request.form['postId'])
+    else:
+        return find_notes_from_post(request.form['postId'])
     
 @app.route('/', methods=['GET', 'POST'])
 def show_feedback():

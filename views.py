@@ -16,6 +16,8 @@ Bugs/pending issues:
 13. Posts should have time stamps because we want to sort by time/points
 14. How to handle multiple pages of feedback?
 15. Show user posts in user profile page
+16. Why is input sanitized only in some scenarios?
+17. Server hangs when gg.jpg is uploaded?
 '''
 
 def handle_request_error(error):
@@ -45,7 +47,7 @@ def handle_vote(form):
     
 def handle_screenshot_upload(postId, filename):
     if request.method == 'POST' and filename:
-        print 'Uploading screenshot'
+        # print 'Uploading screenshot'
         ss = Screenshot(filename=filename, postId=postId)
         db.session.add(ss)
         db.session.commit()
@@ -126,6 +128,29 @@ def add_feedback():
     handle_notes_upload(p.id)
     return redirect(url_for('show_feedback'))
     
+@app.route('/edit', methods=['POST'])
+def edit_feedback():
+    postId = request.form.get('postId')
+    if not postId:
+        handle_request_error(400)
+    p = Post.query.get(postId)
+    if not p:
+        handle_request_error(400)
+    newTitle = request.form.get('title')
+    if newTitle:
+        p.title = newTitle
+    newText = request.form.get('text')
+    if newText:
+        p.text = newText
+    n = Note.query.filter(Note.postId==postId).first()
+    if n:
+        # TODO: What if this is the first note in post?
+        newNote = request.form.get('notes')
+        if newNote:
+            n.note = newNote
+    db.session.commit()
+    return redirect(url_for('show_post', post_id=postId))
+
 @app.route('/notes', methods=['POST'])
 @login_required
 def handle_notes():

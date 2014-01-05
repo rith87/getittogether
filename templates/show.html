@@ -6,8 +6,11 @@
         <img src="{{ url }}" alt="{{ filename }}" class="annotatable">
     {% endif %}
     <p>{{ post.text }}</p>
-    <!-- WARNING: Edit will create new post :( -->
+    {% if not post.id %}
     <form action="{{ url_for ('add_feedback') }}" method="post">
+    {% else %}
+    <form action="{{ url_for ('edit_feedback') }}" method="post">
+    {% endif %}
         <input type="hidden" name="title" value="{{ post.title }}" />
         <input type="hidden" name="filename" value="{{ filename }}" />
         <input type="hidden" name="text" value="{{ post.text }}" />

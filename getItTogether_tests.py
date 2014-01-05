@@ -48,6 +48,13 @@ class getItTogetherTestCase(unittest.TestCase):
             data['test'] = True
         return self.app.post('/add', data=data, follow_redirects=True)
         
+    def edit(self, postId):
+        data = {}
+        data['postId'] = postId
+        data['title'] = '<Bye>'
+        data['text'] = '<strong>HTML</strong> not allowed here'
+        return self.app.post('/edit', data=data, follow_redirects=True)
+        
     def vote(self, id, up):
         if up:
             return self.app.post('/', data=dict(
@@ -95,6 +102,18 @@ class getItTogetherTestCase(unittest.TestCase):
         assert b'feedbackBox' in rv.data
         assert b'<strong>HTML</strong> allowed here' in rv.data
         self.logout()
+        
+    def test_edit_post(self):
+        """Test that posts can be edited"""
+        self.login(GOOD_USERNAME, GOOD_PASSWORD)
+        rv = self.post(False)
+        assert b'&lt;Hello&gt;' in rv.data
+        assert b'feedbackBox' in rv.data
+        assert b'<strong>HTML</strong> allowed here' in rv.data
+        rv = self.edit(1)
+        # print rv.data
+        assert b'&lt;Bye&gt;' in rv.data
+        assert b'not allowed here' in rv.data
         
     def test_successful_partial_post(self):
         """Test the partial post to staging area"""

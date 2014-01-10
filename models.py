@@ -31,6 +31,7 @@ class Post(db.Model):
     title = db.Column(db.String(140))
     text = db.Column(db.String(512))
     points = db.Column(db.Integer)
+    timestamp = db.Column(db.DateTime)
     userId = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):

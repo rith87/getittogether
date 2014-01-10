@@ -5,6 +5,7 @@ from getItTogether import app, db, lm, screenshots
 from models import User, Post, Screenshot, Note
 from forms import LoginForm, RegistrationForm
 import inspect
+import datetime
 
 '''
 Bugs/pending issues:
@@ -12,7 +13,6 @@ Bugs/pending issues:
 5. Need to build some comments tree for comments on feedback
 9. Current user information is stored in year long cookie??
 12. Need admin account
-13. Posts should have time stamps because we want to sort by time/points
 14. How to handle multiple pages of feedback?
 15. Show user posts in user profile page
 16. Why is input sanitized only in some scenarios?
@@ -102,7 +102,7 @@ def add_feedback():
     if request.method == 'GET':
         return render_template('add_feedback.html')
     p = Post (title=request.form['title'], text=request.form['text'], \
-        points=0, userId=user.id)
+        timestamp=datetime.datetime.utcnow(), points=0, userId=user.id)
     if request.form.get('test'):
         flash('Staging feedback')
         filename = None

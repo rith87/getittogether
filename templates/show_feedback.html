@@ -13,6 +13,7 @@
     {% endif %}
     <p>
         {{ item[0].text|safe }}
+        at {{ item[0].timestamp }}
     </p>
     <p>
         <button class="vote" type="submit" name="upvote" value={{ item[0].id }}>:)</button>

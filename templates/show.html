@@ -6,6 +6,7 @@
         <img src="{{ url }}" alt="{{ filename }}" class="annotatable">
     {% endif %}
     <p>{{ post.text }}</p>
+    <p> UTC {{ post.timestamp }}</p>
     {% if not post.id %}
     <form action="{{ url_for ('add_feedback') }}" method="post">
     {% else %}

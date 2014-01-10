@@ -11,7 +11,6 @@ Bugs/pending issues:
 1. Move user registration to open id?
 5. Need to build some comments tree for comments on feedback
 9. Current user information is stored in year long cookie??
-10. Need to implement logging for errors/warnings/info
 12. Need admin account
 13. Posts should have time stamps because we want to sort by time/points
 14. How to handle multiple pages of feedback?
@@ -21,7 +20,7 @@ Bugs/pending issues:
 '''
 
 def handle_request_error(error):
-    print '%s: %s' % (inspect.stack()[1][3], request.form)
+    app.logger.error('Request.form: %s' % request.form)
     abort(error)
 
 def find_user(username, password):
@@ -57,15 +56,12 @@ def handle_notes_upload(postId):
     # TODO: Validate if post ID exists!
     if request.form.get('set') != 'True':
         handle_request_error(400)
-    # print 'Uploading notes'
     note = request.form.get('notes')
     if note:
         n = Note (note=note, postId=postId)
         db.session.add(n)
         db.session.commit()
-        # print n.note
-        # print n.id
-        # print n.postId
+        app.logger.debug('Uploading notes: Post Id=%d, Note=%s' % (n.postId, n.note))
     return redirect(url_for('show_post', post_id=postId))    
     
 def find_screenshot_from_post(postId):
@@ -81,13 +77,11 @@ def find_screenshot_from_post(postId):
 def find_notes_from_post(postId):
     if request.form.get('set') == 'True':
         handle_request_error(400)
-    # 'Retrieving notes %d' % int(postId)
     notes = Note.query.filter(Note.postId==postId).first()
-    # print notes
     notesResponse = ''
     if notes:
         notesResponse = notes.note
-    # print notesResponse
+    app.logger.debug('Retrieving notes: Post Id=%d, Note=%s' % (int(postId), notesResponse))
     return make_response(notesResponse)
     
 # Flask-login related decorated functions    
@@ -120,7 +114,7 @@ def add_feedback():
             url=ssUrl, filename=filename)
     db.session.add(p)
     db.session.commit()
-    # print p.id
+    app.logger.debug('Post saved: Post id=%d, Title=%s' % (p.id, p.title))
     flash('New feedback was successfully posted')
     if 'filename' in request.form.keys():
         handle_screenshot_upload(p.id, request.form['filename'])
@@ -158,8 +152,8 @@ def handle_notes():
         'notes' not in request.form.keys() or \
         'set' not in request.form.keys():
         handle_request_error(400)
-    # print 'Handling notes'
-    # print 'Post id: %s' % request.form['postId']
+    app.logger.debug('Handling notes request: Post id=%s; Set=%s' \
+        % (request.form['postId'], request.form['set']))
     if request.form['set'] == 'True':
         return handle_notes_upload(request.form['postId'])
     else:

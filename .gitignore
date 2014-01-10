@@ -13,3 +13,4 @@ _mailinglist
 *.commitmessage
 db_repository/
 *.jpg
+*.log

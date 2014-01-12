@@ -83,6 +83,16 @@ def find_notes_from_post(postId):
         notesResponse = notes.note
     app.logger.debug('Retrieving notes: Post Id=%d, Note=%s' % (int(postId), notesResponse))
     return make_response(notesResponse)
+
+# find_post output is guaranteed to be good
+def find_post(form):
+    postId = form.get('postId')
+    if not postId:
+        handle_request_error(400)
+    p = Post.query.get(postId)
+    if not p:
+        handle_request_error(400)
+    return p
     
 # Flask-login related decorated functions    
 @lm.user_loader
@@ -123,28 +133,32 @@ def add_feedback():
     return redirect(url_for('show_feedback'))
     
 @app.route('/edit', methods=['POST'])
+@login_required
 def edit_feedback():
-    postId = request.form.get('postId')
-    if not postId:
-        handle_request_error(400)
-    p = Post.query.get(postId)
-    if not p:
-        handle_request_error(400)
+    p = find_post(request.form)
     newTitle = request.form.get('title')
     if newTitle:
         p.title = newTitle
     newText = request.form.get('text')
     if newText:
         p.text = newText
-    n = Note.query.filter(Note.postId==postId).first()
+    n = Note.query.filter(Note.postId==p.id).first()
     if n:
         # TODO: What if this is the first note in post?
         newNote = request.form.get('notes')
         if newNote:
             n.note = newNote
     db.session.commit()
-    return redirect(url_for('show_post', post_id=postId))
+    return redirect(url_for('show_post', post_id=p.id))
 
+@app.route('/delete', methods=['POST'])
+@login_required
+def delete_feedback():
+    p = find_post(request.form)
+    db.session.delete(p)
+    db.session.commit()
+    return redirect(url_for('show_feedback'))
+    
 @app.route('/notes', methods=['POST'])
 @login_required
 def handle_notes():
@@ -162,7 +176,7 @@ def handle_notes():
 @app.route('/', methods=['GET', 'POST'])
 def show_feedback():
     flash('Help software companies stop sucking!')
-    feedback = Post.query.order_by(Post.points.desc()).limit(10).all()
+    feedback = Post.query.order_by(Post.timestamp.desc(), Post.points.desc()).limit(10).all()
     # users = []
     refinedFeedback = []
     if request.method == 'POST':

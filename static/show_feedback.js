@@ -30,4 +30,9 @@ $(document).ready(function(){
                 $(this).attr('name') == 'upvote')
         }
     );
+    $(".delete").click(function()
+        {
+            $(this).parent().children(".deletePost").submit();
+        }   
+    );
 });

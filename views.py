@@ -155,6 +155,7 @@ def edit_feedback():
 @login_required
 def delete_feedback():
     p = find_post(request.form)
+    app.logger.debug('Post deleted: Post id=%d' % p.id)
     db.session.delete(p)
     db.session.commit()
     return redirect(url_for('show_feedback'))

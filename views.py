@@ -177,7 +177,7 @@ def handle_notes():
 @app.route('/', methods=['GET', 'POST'])
 def show_feedback():
     flash('Help software companies stop sucking!')
-    feedback = Post.query.order_by(Post.timestamp.desc(), Post.points.desc()).limit(10).all()
+    feedback = Post.query.order_by(db.cast(Post.timestamp, db.DATE).desc(), Post.points.desc()).limit(10).all()
     # users = []
     refinedFeedback = []
     if request.method == 'POST':

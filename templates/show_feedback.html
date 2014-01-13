@@ -17,7 +17,7 @@
         <form class="deletePost" action="{{ url_for ('delete_feedback') }}" method="post">
             <input type="hidden" name="postId" value="{{ item[0].id }}" />
         </form>
-        <a class="delete">delete</a>
+        <a class="delete" href="#">delete</a>
     </p>
     <p>
         <button class="vote" type="submit" name="upvote" value={{ item[0].id }}>:)</button>

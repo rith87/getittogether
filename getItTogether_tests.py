@@ -108,6 +108,28 @@ class getItTogetherTestCase(unittest.TestCase):
         assert b'<strong>HTML</strong> allowed here' in rv.data
         self.logout()
         
+    def test_post_order(self):
+        """Test that posts come in the correct order"""
+        self.login(GOOD_USERNAME, GOOD_PASSWORD)        
+        rv = self.post(False)
+        assert b'&lt;Hello&gt;' in rv.data
+        rv = self.post(False)
+        rv = self.edit(2)
+        rv = self.app.get('/')
+        firstPost = rv.data.find('Hello')
+        secondPost = rv.data.find('Bye')
+        # print rv.data
+        # print firstPost
+        # print secondPost
+        assert firstPost != -1 and secondPost != -1
+        assert firstPost < secondPost
+        rv = self.vote(2, True)
+        rv = self.app.get('/')
+        firstPost = rv.data.find('Hello')
+        secondPost = rv.data.find('Bye')        
+        assert firstPost != -1 and secondPost != -1
+        assert firstPost > secondPost        
+        
     def test_delete_post(self):
         """Test that messages can be deleted"""
         self.login(GOOD_USERNAME, GOOD_PASSWORD)

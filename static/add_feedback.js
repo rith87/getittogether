@@ -1,3 +1,7 @@
+// paste screenshot:
+// http://stackoverflow.com/questions/6333814/how-does-the-paste-image-from-clipboard-functionality-work-in-gmail-and-google-c
+// http://strd6.com/2011/09/html5-javascript-pasting-image-data-in-chrome/
+
 // prepare the form when the DOM is ready 
 $(document).ready(function() { 
     var options = { 
@@ -18,7 +22,23 @@ $(document).ready(function() {
     }; 
  
     // bind form using 'ajaxForm' 
-    $('.add-feedback').ajaxForm(options); 
+    $('.add-feedback').ajaxForm(options);
+
+    document.onpaste = function(event){
+        var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+        console.log(JSON.stringify(items)); // will give you the mime types
+        var blob = items[0].getAsFile();
+        var reader = new FileReader();
+        reader.onload = function(event){
+            console.log(event.target.result);
+            var ss = $('<img />').attr({'src' : event.target.result});
+            $('#screenshot').append(ss);
+            // NOTE: image is autoscaled?
+            ss.height(ss.height() / 2);           
+            // ss.width(ss.width() / 2);            
+        }; // data url!
+        reader.readAsDataURL(blob);
+    }    
 }); 
 
 function handle_upload_progress(event, position, total, percentComplete)

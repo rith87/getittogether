@@ -233,5 +233,13 @@ class getItTogetherTestCase(unittest.TestCase):
         assert b'Points: 2' in rv.data        
         self.logout()
         
+    def test_post_in_profile(self):
+        """Test that user's posts show up in profile"""
+        self.login(GOOD_USERNAME, GOOD_PASSWORD)        
+        rv = self.post(False)
+        assert b'&lt;Hello&gt;' in rv.data
+        rv = self.get_profile()
+        assert b'&lt;Hello&gt;' in rv.data
+        
 if __name__ == '__main__':
     unittest.main()

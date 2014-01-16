@@ -14,7 +14,6 @@ Bugs/pending issues:
 9. Current user information is stored in year long cookie??
 12. Need admin account
 14. How to handle multiple pages of feedback?
-15. Show user posts in user profile page
 16. Why is input sanitized only in some scenarios?
 17. Server hangs when gg.jpg is uploaded?
 '''
@@ -93,6 +92,13 @@ def find_post(form):
     if not p:
         handle_request_error(400)
     return p
+    
+def attach_screenshots_to_feedback(feedback):
+    refinedFeedback = []
+    for item in feedback:
+        (ssUrl, ssTitle) = find_screenshot_from_post(item.id)
+        refinedFeedback.append((item, User.query.get(item.userId), ssUrl, ssTitle))    
+    return refinedFeedback
     
 # Flask-login related decorated functions    
 @lm.user_loader
@@ -179,12 +185,9 @@ def show_feedback():
     flash('Help software companies stop sucking!')
     feedback = Post.query.order_by(db.cast(Post.timestamp, db.DATE).desc(), Post.points.desc()).limit(10).all()
     # users = []
-    refinedFeedback = []
     if request.method == 'POST':
         handle_vote(request.form)
-    for item in feedback:
-        (ssUrl, ssTitle) = find_screenshot_from_post(item.id)
-        refinedFeedback.append((item, User.query.get(item.userId), ssUrl, ssTitle))
+    refinedFeedback = attach_screenshots_to_feedback(feedback)
     return render_template('show_feedback.html', feedback=refinedFeedback)
 
 @app.route('/post/<int:post_id>')
@@ -204,7 +207,8 @@ def show_profile():
     points = 0
     for post in posts:
         points += post.points
-    return render_template('show_profile.html', user=user, points=points)
+    refinedFeedback = attach_screenshots_to_feedback(posts)
+    return render_template('show_profile.html', user=user, points=points, feedback=refinedFeedback)
     
 @app.route('/register', methods=['GET', 'POST'])
 def register():

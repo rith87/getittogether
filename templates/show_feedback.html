@@ -16,10 +16,12 @@
     <p>
         {{ item[0].text|safe }}
         at {{ item[0].timestamp }}
+        {% if user %}
         <form class="deletePost" action="{{ url_for ('delete_feedback') }}" method="post">
             <input type="hidden" name="postId" value="{{ item[0].id }}" />
         </form>
         <a class="delete" href="#">delete</a>
+        {% endif %}
     </p>
     <p>
         <button class="vote" type="submit" name="upvote" value={{ item[0].id }}>:)</button>

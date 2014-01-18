@@ -19,7 +19,7 @@ Bugs/pending issues:
 '''
 
 def handle_request_error(error):
-    app.logger.error('Request.form: %s' % request.form)
+    app.logger.error('[%d] Request.form: %s' % (error, request.form))
     abort(error)
 
 def find_user(username, password):
@@ -142,6 +142,8 @@ def add_feedback():
 @login_required
 def edit_feedback():
     p = find_post(request.form)
+    if g.user.id != p.userId:
+        handle_request_error(403)
     newTitle = request.form.get('title')
     if newTitle:
         p.title = newTitle
@@ -161,6 +163,8 @@ def edit_feedback():
 @login_required
 def delete_feedback():
     p = find_post(request.form)
+    if g.user.id != p.userId:
+        handle_request_error(403)
     app.logger.debug('Post deleted: Post id=%d' % p.id)
     db.session.delete(p)
     db.session.commit()

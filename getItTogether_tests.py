@@ -70,6 +70,13 @@ class getItTogetherTestCase(unittest.TestCase):
                 downvote=id
             ), follow_redirects=True)
 
+    def register(self):
+        return self.app.post('/register', data=dict(
+            username='lol',
+            password='wtf',
+            email='lol@wtf.com'
+        ), follow_redirects=True)        
+            
     def set_notes(self, id):
         data = {}
         data['postId'] = id
@@ -129,6 +136,21 @@ class getItTogetherTestCase(unittest.TestCase):
         secondPost = rv.data.find('Bye')        
         assert firstPost != -1 and secondPost != -1
         assert firstPost > secondPost        
+        
+    def test_delete_authorization(self):
+        """Test that messages can only be deleted by original author"""
+        self.login(GOOD_USERNAME, GOOD_PASSWORD)
+        rv = self.post(False)
+        assert b'&lt;Hello&gt;' in rv.data
+        assert b'<strong>HTML</strong> allowed here' in rv.data
+        self.logout()
+        rv = self.register()
+        assert b'Thanks for registering!' in rv.data
+        rv = self.login('lol', 'wtf')
+        assert b'You were logged in' in rv.data
+        rv = self.delete(1)
+        assert b'Forbidden' in rv.data
+        self.logout()        
         
     def test_delete_post(self):
         """Test that messages can be deleted"""
@@ -207,11 +229,7 @@ class getItTogetherTestCase(unittest.TestCase):
     
     def test_register_user(self):
         """Test that any user can register and log in"""
-        rv = self.app.post('/register', data=dict(
-            username='lol',
-            password='wtf',
-            email='lol@wtf.com'
-        ), follow_redirects=True)
+        rv = self.register()
         assert b'Thanks for registering!' in rv.data
         rv = self.login('lol', 'wtf')
         assert b'You were logged in' in rv.data

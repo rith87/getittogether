@@ -35,7 +35,12 @@ $(document).ready(function() {
             $('#screenshot').append(ss);
             // NOTE: image is autoscaled?
             ss.height(ss.height() / 2);           
-            // ss.width(ss.width() / 2);            
+            // ss.width(ss.width() / 2);
+            $('.add-feedback').append($('<input />').attr({
+                'name' : 'screenshotDataUrl', 
+                'value' : event.target.result,
+                'type' : 'hidden'
+            }));
         }; // data url!
         reader.readAsDataURL(blob);
     }    

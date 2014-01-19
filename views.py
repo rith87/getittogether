@@ -4,8 +4,11 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from getItTogether import app, db, lm, screenshots
 from models import User, Post, Screenshot, Note
 from forms import LoginForm, RegistrationForm
+from config import UPLOADED_SCREENSHOTS_DEST
+from base64 import b64decode
 import inspect
 import datetime
+import time
 
 '''
 Bugs/pending issues:
@@ -16,6 +19,7 @@ Bugs/pending issues:
 14. How to handle multiple pages of feedback?
 16. Why is input sanitized only in some scenarios?
 17. Server hangs when gg.jpg is uploaded?
+18. delete feedback needs to delete screenshots/notes linked to feedback
 '''
 
 def handle_request_error(error):
@@ -80,7 +84,7 @@ def find_notes_from_post(postId):
     notesResponse = ''
     if notes:
         notesResponse = notes.note
-    app.logger.debug('Retrieving notes: Post Id=%d, Note=%s' % (int(postId), notesResponse))
+    app.logger.debug('Retrieving notes: Post Id=%s, Note=%s' % (postId, notesResponse))
     return make_response(notesResponse)
 
 # find_post output is guaranteed to be good
@@ -126,6 +130,14 @@ def add_feedback():
         if 'screenshot' in request.files:
             filename = screenshots.save(request.files['screenshot'])
             ssUrl = screenshots.url(filename)
+        if 'screenshotDataUrl' in request.form:
+            dataUrl = request.form['screenshotDataUrl'].split(',')
+            decodedScreenshot = b64decode(dataUrl[1])
+            filename = '%s.png' % (int(time.time()))
+            f = open ('%s\\%s' % (UPLOADED_SCREENSHOTS_DEST, filename), 'wb')
+            f.write(decodedScreenshot)
+            ssUrl = screenshots.url(filename)            
+            f.close()
         return render_template('show.html', post=p,
             url=ssUrl, filename=filename)
     db.session.add(p)

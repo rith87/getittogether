@@ -1,5 +1,5 @@
 from flask import render_template, flash, redirect, request, \
-    g, url_for, abort, make_response
+    g, url_for, abort, make_response, session
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from getItTogether import app, db, lm, screenshots
 from models import User, Post, Screenshot, Note
@@ -14,7 +14,6 @@ import time
 Bugs/pending issues:
 1. Move user registration to open id?
 5. Need to build some comments tree for comments on feedback
-9. Current user information is stored in year long cookie??
 12. Need admin account
 14. How to handle multiple pages of feedback?
 16. Why is input sanitized only in some scenarios?
@@ -131,9 +130,10 @@ def add_feedback():
             filename = screenshots.save(request.files['screenshot'])
             ssUrl = screenshots.url(filename)
         if 'screenshotDataUrl' in request.form:
+            # May fail if multiple users post in the same microsecond
             dataUrl = request.form['screenshotDataUrl'].split(',')
             decodedScreenshot = b64decode(dataUrl[1])
-            filename = '%s.png' % (int(time.time()))
+            filename = '%s.png' % (int(time.time() * 1000000))
             f = open ('%s\\%s' % (UPLOADED_SCREENSHOTS_DEST, filename), 'wb')
             f.write(decodedScreenshot)
             ssUrl = screenshots.url(filename)            
@@ -199,8 +199,9 @@ def handle_notes():
 @app.route('/', methods=['GET', 'POST'])
 def show_feedback():
     flash('Help software companies stop sucking!')
+    # print g
+    # print session
     feedback = Post.query.order_by(db.cast(Post.timestamp, db.DATE).desc(), Post.points.desc()).limit(10).all()
-    # users = []
     if request.method == 'POST':
         handle_vote(request.form)
     refinedFeedback = attach_screenshots_to_feedback(feedback)
@@ -251,7 +252,10 @@ def login():
             error = 'Invalid username or password'
         else:
             # Always remember user
-            login_user(user, remember = True)
+            remember = False
+            if request.form.get('remember_me') == 'y':
+                remember = True
+            login_user(user, remember = remember)
             flash('You were logged in')
             return redirect(url_for('show_feedback'))
     return render_template('login.html', error=error, form=form)

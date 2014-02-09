@@ -125,6 +125,17 @@ class getItTogetherTestCase(unittest.TestCase):
         assert b'<strong>HTML</strong> allowed here' in rv.data
         self.logout()
         
+    def test_pagination(self):
+        """Test that pagination works"""
+        self.login(GOOD_USERNAME, GOOD_PASSWORD)        
+        rv = self.post(False)
+        rv = self.post(False)
+        rv = self.post(False)
+        assert b'Next' not in rv.data
+        rv = self.post(False)
+        assert b'Next' in rv.data
+        self.logout()
+    
     def test_post_order(self):
         """Test that posts come in the correct order"""
         self.login(GOOD_USERNAME, GOOD_PASSWORD)        

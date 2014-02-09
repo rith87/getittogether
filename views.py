@@ -4,7 +4,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from getItTogether import app, db, lm, screenshots, oid
 from models import User, Post, Screenshot, Note
 from forms import LoginForm, RegistrationForm
-from config import UPLOADED_SCREENSHOTS_DEST
+from config import UPLOADED_SCREENSHOTS_DEST, POSTS_PER_PAGE
 from base64 import b64decode
 import inspect
 import datetime
@@ -12,10 +12,9 @@ import time
 
 '''
 Bugs/pending issues:
-1. Move user registration to open id?
+1. Move user registration to open id <-- partially moved, need tests
 5. Need to build some comments tree for comments on feedback
 12. Need admin account
-14. How to handle multiple pages of feedback?
 16. Why is input sanitized only in some scenarios?
 17. Server hangs when gg.jpg is uploaded?
 18. delete feedback needs to delete screenshots/notes linked to feedback
@@ -28,7 +27,6 @@ def handle_request_error(error):
 def find_user(username, password):
     """Checks if user is registered"""
     user = User.query.filter(User.username == username, User.password == password).first()
-    # print res
     return user
 
 def handle_vote(form):
@@ -197,15 +195,17 @@ def handle_notes():
         return find_notes_from_post(request.form['postId'])
     
 @app.route('/', methods=['GET', 'POST'])
-def show_feedback():
+@app.route('/<int:page>', methods=['GET', 'POST'])
+def show_feedback(page = 1):
     flash('Help software companies stop sucking!')
-    # print g
-    # print session
-    feedback = Post.query.order_by(db.cast(Post.timestamp, db.DATE).desc(), Post.points.desc()).limit(10).all()
+    # feedback = Post.query.order_by(db.cast(Post.timestamp, db.DATE).desc(), Post.points.desc()).limit(10).all()
+    pagedFeedback = Post.query.order_by(db.cast(Post.timestamp, db.DATE).desc(), \
+                    Post.points.desc()).paginate(page, POSTS_PER_PAGE, False)
+    feedback = pagedFeedback.items
     if request.method == 'POST':
         handle_vote(request.form)
     refinedFeedback = attach_screenshots_to_feedback(feedback)
-    return render_template('show_feedback.html', feedback=refinedFeedback)
+    return render_template('show_feedback.html', page=pagedFeedback, feedback=refinedFeedback)
 
 @app.route('/post/<int:post_id>')
 def show_post(post_id):

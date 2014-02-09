@@ -11,3 +11,5 @@ SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 UPLOADED_SCREENSHOTS_DEST = 'media'
 
 REMEMBER_COOKIE_DURATION = timedelta(days=7)
+
+POSTS_PER_PAGE = 3

@@ -33,6 +33,14 @@
     <li><em>Unbelievable.  No feedback here so far</em>
   {% endfor %}
   </ul>
+  {% if page %}
+    {% if page.has_prev %}
+        <a href="{{ url_for('show_feedback', page=page.prev_num) }}">Previous</a>
+    {% endif %}
+    {% if page.has_next %}
+        <a href="{{ url_for('show_feedback', page=page.next_num) }}">Next</a>    
+    {% endif %}    
+  {% endif %}
   <script type=text/javascript src="{{
   url_for('static', filename='show_feedback.js') }}"></script>    
 {% endblock %}

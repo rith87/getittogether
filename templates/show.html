@@ -20,6 +20,12 @@
         <input type="hidden" name="set" value="True" />
         <input type="submit" value="Save" />
     </form>
+    {% if comments %}
+        <h2>Comments</h2>
+        {% for comment in comments %}
+            <p>{{ comment.comment }}</p>
+        {% endfor %}
+    {% endif %}
     
     <script type=text/javascript src="
         {{ url_for('static', filename='add_annotations.js') }}"></script>

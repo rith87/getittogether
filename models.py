@@ -52,3 +52,12 @@ class Note(db.Model):
     
     def __repr__(self):
         return '<Note %r>' % (self.id)
+        
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    comment = db.Column(db.String(1024))
+    parent = db.Column(db.Integer)
+    timestamp = db.Column(db.DateTime)    
+    postId = db.Column(db.Integer, db.ForeignKey('post.id'))
+    userId = db.Column(db.Integer, db.ForeignKey('user.id'))
+    

@@ -48,7 +48,13 @@ class getItTogetherTestCase(unittest.TestCase):
         if partial:
             data['test'] = True
         return self.app.post('/add', data=data, follow_redirects=True)
-        
+    
+    def comment(self, postId):
+        data = {}
+        data['comment'] = 'wtf?'
+        data['postId'] = postId
+        return self.app.post('/comment', data=data, follow_redirects=True)
+    
     def postWithDataUrl(self):
         data = {}
         data['title'] = '<Hello>'
@@ -282,6 +288,15 @@ class getItTogetherTestCase(unittest.TestCase):
         assert b'&lt;Hello&gt;' in rv.data
         assert b'delete' in rv.data
         
+    def test_add_comment(self):
+        """Test that comments can be added"""
+        self.login(GOOD_USERNAME, GOOD_PASSWORD)
+        rv = self.post(False)
+        assert b'&lt;Hello&gt;' in rv.data
+        rv = self.comment(1)
+        assert b'wtf' in rv.data
+        self.logout()
+    
     def test_data_url_upload(self):
         """Test that data URL can be uploaded"""
         self.login(GOOD_USERNAME, GOOD_PASSWORD)                

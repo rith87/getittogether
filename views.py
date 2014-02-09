@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, request, \
     g, url_for, abort, make_response, session
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from getItTogether import app, db, lm, screenshots, oid
-from models import User, Post, Screenshot, Note
+from models import User, Post, Screenshot, Note, Comment
 from forms import LoginForm, RegistrationForm
 from config import UPLOADED_SCREENSHOTS_DEST, POSTS_PER_PAGE
 from base64 import b64decode
@@ -18,6 +18,7 @@ Bugs/pending issues:
 16. Why is input sanitized only in some scenarios?
 17. Server hangs when gg.jpg is uploaded?
 18. delete feedback needs to delete screenshots/notes linked to feedback
+19. Refactor find_*_from_post
 '''
 
 def handle_request_error(error):
@@ -73,6 +74,9 @@ def find_screenshot_from_post(postId):
         ssUrl = screenshots.url(ss.filename)
         ssTitle = ss.filename
     return (ssUrl, ssTitle)
+    
+def find_comments_from_post(postId):
+    return Comment.query.filter(Comment.postId==postId).all() 
     
 def find_notes_from_post(postId):
     if request.form.get('set') == 'True':
@@ -147,6 +151,17 @@ def add_feedback():
     # handle_screenshot_upload(p.id, request.form['filename'] if 'filename' in request.form else None)
     handle_notes_upload(p.id)
     return redirect(url_for('show_feedback'))
+
+@app.route('/comment', methods=['POST'])
+@login_required
+def add_comment():
+    p = find_post(request.form)
+    comment = request.form.get('comment')
+    c = Comment(comment=comment, parent=-1, timestamp=datetime.datetime.utcnow(), \
+        postId=p.id, userId=g.user.id)
+    db.session.add(c)
+    db.session.commit()
+    return redirect(url_for('show_post', post_id=p.id))    
     
 @app.route('/edit', methods=['POST'])
 @login_required
@@ -213,7 +228,8 @@ def show_post(post_id):
     if not post:
         return redirect(url_for('show_feedback'))
     (ssUrl, ssTitle) = find_screenshot_from_post(post_id)
-    return render_template('show.html', post=post, url=ssUrl, filename=ssTitle)
+    comments = find_comments_from_post(post_id)
+    return render_template('show.html', post=post, url=ssUrl, filename=ssTitle, comments=comments)
 
 @app.route('/profile')
 @login_required

@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, request, \
     g, url_for, abort, make_response, session
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from getItTogether import app, db, lm, screenshots
+from getItTogether import app, db, lm, screenshots, oid
 from models import User, Post, Screenshot, Note
 from forms import LoginForm, RegistrationForm
 from config import UPLOADED_SCREENSHOTS_DEST
@@ -240,6 +240,7 @@ def register():
     return render_template('register.html', form=form)
     
 @app.route('/login', methods=['GET', 'POST'])
+@oid.loginhandler
 def login():
     error = None
     form = LoginForm()
@@ -247,6 +248,7 @@ def login():
         print 'Redirecting...'
         return redirect(url_for('show_feedback'))
     if request.method == 'POST':
+        # return oid.try_login(request.form['username'], ask_for=['email'])
         user = find_user(request.form['username'], request.form['password'])
         if not user:
             error = 'Invalid username or password'
@@ -259,6 +261,11 @@ def login():
             flash('You were logged in')
             return redirect(url_for('show_feedback'))
     return render_template('login.html', error=error, form=form)
+    
+@oid.after_login
+def after_login(resp):
+    print 'email:%s, nickname:%s' % (resp.email, resp.nickname)
+    return redirect(url_for('show_feedback'))    
     
 @app.route('/logout')
 def logout():

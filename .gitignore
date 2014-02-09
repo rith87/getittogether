@@ -15,3 +15,5 @@ db_repository/
 *.jpg
 *.log
 *.png
+.idea/
+tmp/

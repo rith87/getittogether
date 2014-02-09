@@ -10,7 +10,9 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 from flask.ext.uploads import UploadSet, IMAGES, configure_uploads
+from flask.ext.openid import OpenID
 import logging
+import os
 
 # create our little application :)
 app = Flask(__name__)
@@ -35,6 +37,8 @@ file_handler.setFormatter(logging.Formatter(
     '[in %(pathname)s:%(funcName)s():%(lineno)d]'
 ))
 app.logger.addHandler(file_handler)
+
+oid = OpenID(app, 'tmp')
 
 import models
 import views

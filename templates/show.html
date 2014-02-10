@@ -26,6 +26,12 @@
             <p>{{ comment.comment }}</p>
         {% endfor %}
     {% endif %}
+    <h2>Post a comment:</h2>
+    <form action="{{ url_for ('add_comment') }}" method="post">
+        <textarea name="comment" rows=5 cols=40></textarea>
+        <input type="hidden" name="postId" value="{{ post.id }}" />
+        <input type="submit" value="Comment" />
+    </form>    
     
     <script type=text/javascript src="
         {{ url_for('static', filename='add_annotations.js') }}"></script>

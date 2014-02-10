@@ -13,12 +13,13 @@ import time
 '''
 Bugs/pending issues:
 1. Move user registration to open id <-- partially moved, need tests
-5. Need to build some comments tree for comments on feedback
+5. Need to build some comments tree for comments on feedback <-- not critical
 12. Need admin account
 16. Why is input sanitized only in some scenarios?
 17. Server hangs when gg.jpg is uploaded?
 18. delete feedback needs to delete screenshots/notes linked to feedback
 19. Refactor find_*_from_post
+20. Sort feedback by companies
 '''
 
 def handle_request_error(error):

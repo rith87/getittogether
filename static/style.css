@@ -18,11 +18,16 @@ a:active {text-decoration:underline;}
 .flash          { background: #CEE5F5; padding: 0.5em;
                   border: 1px solid #AACBE2; }
 .error          { background: #F0D6D6; padding: 0.5em; }
+/* 
+Several notes:
+1. Most screens should be 16:9 
+2. Use thumbnail overlay class if you want to overlay image
+*/
 .thumbnail,
 .thumbnailOverlay
 {
     max-width:160px;
-    max-height:160px;
+    max-height:90px;
     width:auto;
     height:auto;   
     position:absolute;
@@ -45,4 +50,17 @@ a:active {text-decoration:underline;}
     overflow:auto;
     float:left;
     margin-right:0.5em;
+}
+.feedbackText
+{
+    float:left;
+    margin:0em;
+}
+.feedbackInfo
+{
+    font-size: 0.8em;
+}
+.vote
+{
+    float:right;
 }

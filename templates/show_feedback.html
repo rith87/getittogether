@@ -5,29 +5,27 @@
   <ul class=feedback>
   {% for item in feedback %}
     <div class="feedbackBox">
-    <li><h2><a href="{{ url_for('show_post', post_id=item[0].id) }}">{{ item[0].title }} by {{ item[1].username }}</a></h2>
+    <li><h2><a href="{{ url_for('show_post', post_id=item[0].id) }}">{{ item[0].title }}</a></h2>
     {% if item[2] %}
         <div class="thumbnailHolder">
             <img src="{{ item[2] }}" alt="{{ item[3] }}" class="thumbnail">
-            <!-- hardcode ftw -->
-            <img src="http://reddeadredemptionps3.webstarts.com/uploads/right_red_box.jpg" alt="overlay" class="thumbnailOverlay">
         </div>
     {% endif %}
-    <p>
+    <div class="feedbackText">
         {{ item[0].text|safe }}
-        at {{ item[0].timestamp }}
+        <div class="feedbackInfo">by {{ item[1].username }} at {{ item[0].timestamp }}</div>
         {% if user %}
         <form class="deletePost" action="{{ url_for ('delete_feedback') }}" method="post">
             <input type="hidden" name="postId" value="{{ item[0].id }}" />
         </form>
         <a class="delete" href="#">delete</a>
         {% endif %}
-    </p>
-    <p>
+    </div>
+    <div class="vote">
         <button class="vote" type="submit" name="upvote" value={{ item[0].id }}>:)</button>
         <button class="vote" type="submit" name="downvote" value={{ item[0].id }}>:(</button>
         <div id={{ item[0].id }}> {{ item[0].points }} points </div>
-    </p>
+    </div>
     </div>
   {% else %}
     <li><em>Unbelievable.  No feedback here so far</em>

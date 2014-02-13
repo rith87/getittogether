@@ -13,7 +13,7 @@
     {% endif %}
     <div class="feedbackText">
         {{ item[0].text|safe }}
-        <div class="feedbackInfo">by {{ item[1].username }} at {{ item[0].timestamp }}</div>
+        <div class="feedbackInfo">by {{ item[1].username }} at {{ item[0].timestamp.strftime( '%Y-%m-%d %I:%M:%S %p' ) }}</div>
         {% if user %}
         <form class="deletePost" action="{{ url_for ('delete_feedback') }}" method="post">
             <input type="hidden" name="postId" value="{{ item[0].id }}" />

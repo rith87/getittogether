@@ -46,7 +46,7 @@ Several notes:
 .thumbnailHolder
 {
     width:160px;
-    height:160px;
+    height:90px;
     overflow:auto;
     float:left;
     margin-right:0.5em;

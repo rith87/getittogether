@@ -20,6 +20,11 @@ Bugs/pending issues:
 18. delete feedback needs to delete screenshots/notes linked to feedback
 19. Refactor find_*_from_post
 20. Sort feedback by companies
+22. Upvote/downvote buttons could be fancier
+23. Delete in profile page should redirect to profile page
+24. Share post without image fails
+25. Order is screwed up. Needs to return newest posts first
+26. Upload and annotate pages should be combined
 '''
 
 def handle_request_error(error):
@@ -56,8 +61,6 @@ def handle_screenshot_upload(postId, filename):
     
 def handle_notes_upload(postId):
     # TODO: Validate if post ID exists!
-    if request.form.get('set') != 'True':
-        handle_request_error(400)
     note = request.form.get('notes')
     if note:
         n = Note (note=note, postId=postId)
@@ -80,8 +83,6 @@ def find_comments_from_post(postId):
     return Comment.query.filter(Comment.postId==postId).all() 
     
 def find_notes_from_post(postId):
-    if request.form.get('set') == 'True':
-        handle_request_error(400)
     notes = Note.query.filter(Note.postId==postId).first()
     notesResponse = ''
     if notes:
@@ -196,19 +197,23 @@ def delete_feedback():
     db.session.commit()
     return redirect(url_for('show_feedback'))
     
-@app.route('/notes', methods=['POST'])
+@app.route('/notes', methods=['GET', 'POST'])
 @login_required
 def handle_notes():
-    if 'postId' not in request.form.keys() or \
-        'notes' not in request.form.keys() or \
-        'set' not in request.form.keys():
-        handle_request_error(400)
-    app.logger.debug('Handling notes request: Post id=%s; Set=%s' \
-        % (request.form['postId'], request.form['set']))
-    if request.form['set'] == 'True':
-        return handle_notes_upload(request.form['postId'])
+    if request.method == 'GET':
+        postId = request.args.get('postId')
+        print postId
+        if not postId:
+            handle_request_error(400)
+        return find_notes_from_post(postId)    
     else:
-        return find_notes_from_post(request.form['postId'])
+        postId = request.form.get('postId')
+        notes = request.form.get('notes')
+        if not postId or not notes:
+            handle_request_error(400)
+        app.logger.debug('Handling notes request: Post id=%s; Notes=%s' \
+            % (postId, notes))
+        return handle_notes_upload(postId)
     
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/<int:page>', methods=['GET', 'POST'])

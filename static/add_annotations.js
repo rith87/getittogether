@@ -28,13 +28,11 @@ jQuery(document).ready(function($) {
 	var postId = $('input[name=postId]').val();
 	var params = {
 		postId : postId,
-		notes : '',
-		set : 'False'
 	};
     $('.annotatable').load(function ()
     {
         anno.makeAnnotatable($('.annotatable')[0]);        
-        $.post('/notes', params)
+        $.get('/notes', params)
             .done(
                 function(data)
                 {

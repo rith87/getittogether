@@ -6,6 +6,7 @@ from models import User, Post, Screenshot, Note, Comment
 from forms import LoginForm, RegistrationForm
 from config import UPLOADED_SCREENSHOTS_DEST, POSTS_PER_PAGE
 from base64 import b64decode
+from sqlalchemy.sql import func
 import inspect
 import datetime
 import time
@@ -22,8 +23,6 @@ Bugs/pending issues:
 20. Sort feedback by companies
 22. Upvote/downvote buttons could be fancier
 23. Delete in profile page should redirect to profile page
-24. Share post without image fails
-25. Order is screwed up. Needs to return newest posts first
 26. Upload and annotate pages should be combined
 '''
 
@@ -219,8 +218,9 @@ def handle_notes():
 @app.route('/<int:page>', methods=['GET', 'POST'])
 def show_feedback(page = 1):
     flash('Help software companies stop sucking!')
-    # feedback = Post.query.order_by(db.cast(Post.timestamp, db.DATE).desc(), Post.points.desc()).limit(10).all()
-    pagedFeedback = Post.query.order_by(db.cast(Post.timestamp, db.DATE).desc(), \
+    # Note that cast() operator does not work with DATE and sqlite. Use func.DATE() instead
+    # http://stackoverflow.com/questions/17333014/convert-selected-datetime-to-date-in-sqlalchemy
+    pagedFeedback = Post.query.order_by((func.DATE(Post.timestamp)).desc(), \
                     Post.points.desc()).paginate(page, POSTS_PER_PAGE, False)
     feedback = pagedFeedback.items
     if request.method == 'POST':

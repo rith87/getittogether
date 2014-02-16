@@ -17,7 +17,8 @@
         {% if user %}
         <form class="deletePost" action="{{ url_for ('delete_feedback') }}" method="post">
             <input type="hidden" name="postId" value="{{ item[0].id }}" />
-        </form>
+        </form>        
+        <a href="{{ url_for ('show_post', post_id=item[0].id) }}">edit</a>                
         <a class="delete" href="#">delete</a>
         {% endif %}
     </div>

@@ -24,6 +24,8 @@ Bugs/pending issues:
 22. Upvote/downvote buttons could be fancier
 23. Delete in profile page should redirect to profile page
 26. Upload and annotate pages should be combined
+27. Edit post needs to be editable
+28. Next
 '''
 
 def handle_request_error(error):
@@ -194,7 +196,7 @@ def delete_feedback():
     app.logger.debug('Post deleted: Post id=%d' % p.id)
     db.session.delete(p)
     db.session.commit()
-    return redirect(url_for('show_feedback'))
+    return redirect(url_for('show_profile'))
     
 @app.route('/notes', methods=['GET', 'POST'])
 @login_required
@@ -242,7 +244,7 @@ def show_post(post_id):
 def show_profile():
     # user must be valid
     user = g.user
-    posts = Post.query.filter_by(userId=user.id).all()
+    posts = Post.query.filter_by(userId=user.id).order_by(Post.points.desc(), Post.timestamp.desc())
     points = 0
     for post in posts:
         points += post.points

@@ -52,8 +52,8 @@ jQuery(document).ready(function($) {
         }
         $('input[name=notes]').val(notes);
     });
-    $('.editable').bind('dblclick',
-        function(){
-            $(this).attr('contentEditable',true);
-    });
 });
+
+// TODO: Move annotorious code here if it conflicts with JQuery
+// window.onload = function() {      
+// }

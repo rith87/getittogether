@@ -22,9 +22,6 @@ Bugs/pending issues:
 19. Refactor find_*_from_post
 20. Sort feedback by companies
 22. Upvote/downvote buttons could be fancier
-23. Delete in profile page should redirect to profile page
-26. Upload and annotate pages should be combined
-27. Edit post needs to be editable
 28. Next
 '''
 

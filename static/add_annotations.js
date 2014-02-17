@@ -20,6 +20,9 @@ function add_annotation(data)
 	}
 }
 
+// Annotorious takes the DOM object as input, so we need to do 
+// $('.annotatable')[0] because $('.annotatable') will return the
+// jquery object instead.
 var annotation;
 jQuery.noConflict();
 jQuery(document).ready(function($) {

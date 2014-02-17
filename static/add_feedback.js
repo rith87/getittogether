@@ -3,7 +3,8 @@
 // http://strd6.com/2011/09/html5-javascript-pasting-image-data-in-chrome/
 
 // prepare the form when the DOM is ready 
-$(document).ready(function() { 
+jQuery.noConflict();
+jQuery(document).ready(function($) { 
     var options = { 
         // target:        '#output1',   // target element(s) to be updated with server response 
         beforeSubmit:   showRequest,     // pre-submit callback 
@@ -31,7 +32,7 @@ $(document).ready(function() {
         var reader = new FileReader();
         reader.onload = function(event){
             console.log(event.target.result);
-            var ss = $('<img />').attr({'src' : event.target.result});
+            var ss = $('<img />').attr({'src' : event.target.result, 'class' : 'annotatable'});
             $('#screenshot').append(ss);
             // NOTE: image is autoscaled?
             ss.height(ss.height() / 2);           
@@ -41,6 +42,7 @@ $(document).ready(function() {
                 'value' : event.target.result,
                 'type' : 'hidden'
             }));
+            anno.makeAnnotatable($('.annotatable')[0]);
         }; // data url!
         reader.readAsDataURL(blob);
     }    

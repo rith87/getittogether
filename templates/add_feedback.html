@@ -10,16 +10,14 @@
         <dd><input type=text size=30 name=title>
         <dt>Text:
         <dd><textarea name=text rows=5 cols=40></textarea>
-        <dt>Screenshot:
-        <dd><input type=file name=screenshot>
-        <dt>Test:
-        <dd><input type=checkbox name=test>        
+        <dt>Screenshot: <input type=file name=screenshot>
+        <div id="screenshot"></div>
+        <dt>Test: <input type=checkbox name=test>        
         <dd><input type=submit value=Share>
       </dl>
       <input type="hidden" name="notes" />
     </form>
     <div id="output1">
     </div>
-    <div id="screenshot"></div>
   {% endif %}
 {% endblock %}

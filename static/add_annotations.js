@@ -47,13 +47,17 @@ jQuery(document).ready(function($) {
         var notes = '';
         for (var i = 0; i < annotations.length; i++)
         {
-            // alert(JSON.stringify(annotations[i]));
             notes += (JSON.stringify(annotations[i]) + ';');
         }
         $('input[name=notes]').val(notes);
     });
+    $('.editable').bind('dblclick',
+        function(){
+            $(this).attr('contentEditable',true);
+    }).blur(
+        function() {
+            $(this).attr('contentEditable', false);
+            $('input[name=' + $(this).attr('name') + ']').val($(this).text());
+    });    
 });
 
-// TODO: Move annotorious code here if it conflicts with JQuery
-// window.onload = function() {      
-// }

@@ -196,7 +196,19 @@ class getItTogetherTestCase(unittest.TestCase):
         # print rv.data
         assert b'&lt;Bye&gt;' in rv.data
         assert b'not allowed here' in rv.data
-        
+        self.logout()
+    
+    def test_edit_authorization(self):
+        """Test that post can only be edited by the post author"""
+        self.login(GOOD_USERNAME, GOOD_PASSWORD)
+        rv = self.post(False)
+        assert b'&lt;Hello&gt;' in rv.data
+        rv = self.app.get('/post/1')
+        assert b'class="editable"' in rv.data
+        self.logout()
+        rv = self.app.get('/post/1')
+        assert b'class="editable"' not in rv.data
+    
     def test_successful_partial_post(self):
         """Test the partial post to staging area"""
         self.login(GOOD_USERNAME, GOOD_PASSWORD)

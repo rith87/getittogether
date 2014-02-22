@@ -22,7 +22,9 @@ Bugs/pending issues:
 19. Refactor find_*_from_post
 20. Sort feedback by companies
 22. Upvote/downvote buttons could be fancier
-28. Next
+28. Points are not updated correctly <-- due to pagination
+29. Save notes directly from add_feedback()
+30. Next
 '''
 
 def handle_request_error(error):

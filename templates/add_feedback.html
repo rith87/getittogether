@@ -2,6 +2,8 @@
 {% block body %}
   {% if g.user.is_authenticated() %}
     <script type=text/javascript src="{{
+    url_for('static', filename='add_annotations.js') }}"></script>  
+  <script type=text/javascript src="{{
     url_for('static', filename='add_feedback.js') }}"></script>  
     <script src="http://malsup.github.com/jquery.form.js"></script>   
     <form enctype=multipart/form-data action="{{ url_for('add_feedback') }}" method=post class=add-feedback>

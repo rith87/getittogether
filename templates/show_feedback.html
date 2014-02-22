@@ -23,8 +23,8 @@
         {% endif %}
     </div>
     <div class="vote">
-        <button class="vote" type="submit" name="upvote" value={{ item[0].id }}>:)</button>
         <button class="vote" type="submit" name="downvote" value={{ item[0].id }}>:(</button>
+        <button class="vote" type="submit" name="upvote" value={{ item[0].id }}>:)</button>        
         <div id={{ item[0].id }}> {{ item[0].points }} points </div>
     </div>
     </div>

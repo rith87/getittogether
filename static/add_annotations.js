@@ -20,6 +20,19 @@ function add_annotation(data)
 	}
 }
 
+function add_annotation_handler()
+{
+    anno.addHandler('onAnnotationCreated', function(annotation) {
+        annotations = anno.getAnnotations();
+        var notes = '';
+        for (var i = 0; i < annotations.length; i++)
+        {
+            notes += (JSON.stringify(annotations[i]) + ';');
+        }
+        jQuery('input[name=notes]').val(notes);
+    });
+}
+
 // Annotorious takes the DOM object as input, so we need to do 
 // $('.annotatable')[0] because $('.annotatable') will return the
 // jquery object instead.
@@ -45,15 +58,7 @@ jQuery(document).ready(function($) {
                 }
             );        
     });
-    anno.addHandler('onAnnotationCreated', function(annotation) {
-        annotations = anno.getAnnotations();
-        var notes = '';
-        for (var i = 0; i < annotations.length; i++)
-        {
-            notes += (JSON.stringify(annotations[i]) + ';');
-        }
-        $('input[name=notes]').val(notes);
-    });
+    add_annotation_handler();
     $('.editable').bind('dblclick',
         function(){
             $(this).attr('contentEditable',true);

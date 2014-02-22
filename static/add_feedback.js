@@ -43,6 +43,7 @@ jQuery(document).ready(function($) {
                 'type' : 'hidden'
             }));
             anno.makeAnnotatable($('.annotatable')[0]);
+            add_annotation_handler();
         }; // data url!
         reader.readAsDataURL(blob);
     }    
@@ -58,7 +59,7 @@ function handle_upload_progress(event, position, total, percentComplete)
 function showRequest(formData, jqForm, options) { 
     // formData is an array; here we use $.param to convert it to a string to display it 
     // but the form plugin does this for you automatically when it submits the data 
-    var queryString = $.param(formData); 
+    var queryString = jQuery.param(formData); 
  
     // jqForm is a jQuery object encapsulating the form element.  To access the 
     // DOM element for the form do this: 
@@ -73,8 +74,8 @@ function showRequest(formData, jqForm, options) {
 
 function update_page (responseText)
 {
-    var newPage = $(responseText).filter('.page').children();
-    $('.page').html(newPage);
+    var newPage = jQuery(responseText).filter('.page').children();
+    jQuery('.page').html(newPage);
 }
  
 // post-submit callback 
